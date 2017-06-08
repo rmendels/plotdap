@@ -6,9 +6,6 @@ Description: Easily visualize 'tabledap' and 'griddap' objects obtained via the 
 License: MIT + file LICENSE
 URL: https://github.com/ropensci/plotdap
 BugReports: https://github.com/ropensci/plotdap/issues
-LazyData: LazyData: true
-VignetteBuilder: knitr
-Encoding: UTF-8
 Depends: 
   rerddap
 Imports:
@@ -24,8 +21,14 @@ Imports:
   raster,
   sf,
   rgeos,
-  rgdal,
-  Cairo
+  rgdal
+Suggests:
+  testthat,
+  Cairo,
+  knitr,
+  rmarkdown
 Remotes:
   tidyverse/ggplot2
 RoxygenNote: 6.0.1
+LazyData: true
+Encoding: UTF-8

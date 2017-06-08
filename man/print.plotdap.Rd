@@ -4,10 +4,10 @@
 \alias{print.plotdap}
 \title{Print a plotdap object}
 \usage{
-\method{print}{plotdap}(plot, ...)
+\method{print}{plotdap}(x, ...)
 }
 \arguments{
-\item{plot}{a plotdap object}
+\item{x}{a plotdap object}
 
 \item{...}{currently unused}
 }

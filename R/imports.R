@@ -1,3 +1,5 @@
+#' @importFrom utils packageVersion
+#' @importFrom stats quantile setNames
 #' @importFrom tidyr gather_
 #' @importFrom maps map
 #' @importFrom scales rescale col_numeric

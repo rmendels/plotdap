@@ -4,10 +4,10 @@
 \alias{print.ggplotdap}
 \title{Print a ggplot plotdap object}
 \usage{
-\method{print}{ggplotdap}(plot, ...)
+\method{print}{ggplotdap}(x, ...)
 }
 \arguments{
-\item{plot}{a ggplotdap object}
+\item{x}{a ggplotdap object}
 
 \item{...}{currently unused}
 }

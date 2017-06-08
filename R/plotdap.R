@@ -132,7 +132,7 @@ plotdap <- function(method = c("ggplot2", "base"),
 #' @param plot a \link{plotdap} object.
 #' @param table a \link{tabledap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
-#' @param color a character string of length 1 a name in \link{colors}
+#' @param color either a character string of length 1 matching a name in \link[rerddap]{colors}
 #' or a vector of color codes. This defines the colorscale used to encode values
 #' of \code{var}.
 #' @param size the size of the symbol.
@@ -173,7 +173,7 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
   }
 
   # color scale
-  cols <- if (length(color) == 1) colors[[color]] else color
+  cols <- if (length(color) == 1) rerddap::colors[[color]] else color
 
   if (is_ggplotdap(plot)) {
 
@@ -222,6 +222,9 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 
 #' @inheritParams add_tabledap
 #' @param grid a \link{griddap} object.
+#' @param fill either a character string of length 1 matching a name in \\link[rerddap]{colors}
+#' or a vector of color codes. This defines the colorscale used to encode values
+#' of \code{var}.
 #' @param maxpixels integer > 0. Maximum number of cells to use for the plot.
 #' If maxpixels < ncell(x), sampleRegular is used before plotting.
 #' If gridded=TRUE maxpixels may be ignored to get a larger sample
@@ -231,10 +234,6 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 #'   (\link{mean} is the default).
 #'   \item A character string (of length 1) matching a time value.
 #' }
-#' @param animate whether to animate over the \code{time} variable (if it exists).
-#' Currently only implemented for \code{method='ggplot2'} and requires the
-#' gganimate package.
-#' @param ani.args arguments passed along to \code{gganimate()}.
 #' @export
 #' @rdname plotdap
 
@@ -311,7 +310,7 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   }
 
   # color scale
-  cols <- if (length(fill) == 1) colors[[fill]] else fill
+  cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
 
   if (is_ggplotdap(plot)) {
     # TODO: not the most efficient approach, but it will have to do for now
@@ -362,11 +361,12 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 
 #' Add ggplot2 elements to a plotdap object
 #'
-#' @param plot a plotdap object
-#' @param ... ggplot2 elements
+#' @inheritParams plotdap
 #' @export
 #' @rdname plotdap
 #' @examples
+#'
+#' library(ggplot2)
 #'
 #' add_ggplot(
 #'  plotdap(
@@ -394,71 +394,71 @@ add_ggplot <- function(plot, ...) {
 
 #' Print a ggplot plotdap object
 #'
-#' @param plot a ggplotdap object
+#' @param x a ggplotdap object
 #' @param ... currently unused
 #' @export
-print.ggplotdap <- function(plot, ...) {
+print.ggplotdap <- function(x, ...) {
   # find a sensible x/y range....assuming all the layer data is sf
-  gg <- plot$ggplot
+  gg <- x$ggplot
   layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
   bbs <- lapply(layer_data[-1], sf::st_bbox)
   xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
   ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
-  plot <- add_ggplot(
-    plot, coord_sf(
-      crs = plot$crs, datum = plot$datum,
+  x <- add_ggplot(
+    x, coord_sf(
+      crs = x$crs, datum = x$datum,
       xlim = xlim, ylim = ylim
     )
   )
-  if (has_gganimate() && isTRUE(plot$animate)) {
-    p <- list(p = plot$ggplot)
-    print(do.call(gganimate::gganimate, c(p, plot$ani.args)))
+  if (has_gganimate() && isTRUE(x$animate)) {
+    p <- list(p = x$ggplot)
+    print(do.call(gganimate::gganimate, c(p, x$ani.args)))
   } else {
-    print(plot$ggplot)
+    print(x$ggplot)
   }
-  invisible(plot)
+  invisible(x)
 }
 
 
 
 #' Print a plotdap object
 #'
-#' @param plot a plotdap object
+#' @param x a plotdap object
 #' @param ... currently unused
 #' @export
-print.plotdap <- function(plot, ...) {
+print.plotdap <- function(x, ...) {
 
   # remember, unlike ggplotdap, plotdap layers can have both sf and raster objs
-  bbs <- lapply(plot$layers[-1], get_bbox)
+  bbs <- lapply(x$layers[-1], get_bbox)
   xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
   ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
 
   graticule <- sf::st_graticule(
-    c(xlim[1], ylim[1], xlim[2], ylim[2]) %||% get_bbox(plot$layers[[1]]),
-    crs = plot$crs,
-    datum = plot$datum
+    c(xlim[1], ylim[1], xlim[2], ylim[2]) %||% get_bbox(x$layers[[1]]),
+    crs = x$crs,
+    datum = x$datum
   )
 
   # plot the background map
   plot(
-    plot$layers[[1]],
+    x$layers[[1]],
     xlim = xlim,
     ylim = ylim,
-    main = plot$mapTitle %||% "",
-    col = plot$mapFill,
-    border = plot$mapColor,
+    main = x$mapTitle %||% "",
+    col = x$mapFill,
+    border = x$mapColor,
     graticule = graticule,
     #setParUsrBB = TRUE,
     bty = "n",
     ...
   )
 
-  for (i in setdiff(seq_along(plot$layers), 1)) {
-    layer <- plot$layers[[i]]
+  for (i in setdiff(seq_along(x$layers), 1)) {
+    layer <- x$layers[[i]]
     props <- attr(layer, "props")
     rng <- range(props$values, na.rm = TRUE)
     pal <- scales::col_numeric(props$color, rng)
-    breaks <- quantile(props$values, 0:4/4, na.rm = TRUE)
+    breaks <- stats::quantile(props$values, 0:4/4, na.rm = TRUE)
 
     # plot rasters first, otherwise we have to fiddle with legends
     if (is_raster(layer)) {
@@ -496,7 +496,7 @@ print.plotdap <- function(plot, ...) {
       )
     }
   }
-  plot
+  x
 }
 
 
@@ -523,7 +523,7 @@ get_bbox <- function(x) {
   # TODO: support raster objects, as well?
   if (inherits(x, "RasterLayer")) {
     ext <- as.list(raster::extent(x))
-    return(setNames(ext, c("xmin", "xmax", "ymin", "ymax")))
+    return(stats::setNames(ext, c("xmin", "xmax", "ymin", "ymax")))
   }
   invisible()
 }

@@ -50,7 +50,7 @@ any object of class "gg" (e.g, \code{theme()}, \code{scale_fill_gradientn()},
 
 \item{var}{a formula defining a variable, or function of variables to visualize.}
 
-\item{color}{a character string of length 1 a name in \link{colors}
+\item{color}{either a character string of length 1 matching a name in \link[rerddap]{colors}
 or a vector of color codes. This defines the colorscale used to encode values
 of \code{var}.}
 
@@ -68,6 +68,10 @@ gganimate package.}
 
 \item{grid}{a \link{griddap} object.}
 
+\item{fill}{either a character string of length 1 matching a name in \\link[rerddap]{colors}
+or a vector of color codes. This defines the colorscale used to encode values
+of \code{var}.}
+
 \item{maxpixels}{integer > 0. Maximum number of cells to use for the plot.
 If maxpixels < ncell(x), sampleRegular is used before plotting.
 If gridded=TRUE maxpixels may be ignored to get a larger sample}
@@ -78,16 +82,6 @@ If gridded=TRUE maxpixels may be ignored to get a larger sample}
   (\link{mean} is the default).
   \item A character string (of length 1) matching a time value.
 }}
-
-\item{animate}{whether to animate over the \code{time} variable (if it exists).
-Currently only implemented for \code{method='ggplot2'} and requires the
-gganimate package.}
-
-\item{ani.args}{arguments passed along to \code{gganimate()}.}
-
-\item{plot}{a plotdap object}
-
-\item{...}{ggplot2 elements}
 }
 \description{
 Visualize data returned from rerddap servers. Use \code{plotdap()} to initialize
@@ -153,6 +147,8 @@ p <- plotdap("base", mapTitle = "Average wind over time")
 add_griddap(p, wind, ~x_wind)
 
 }
+
+library(ggplot2)
 
 add_ggplot(
  plotdap(

@@ -32,7 +32,7 @@ try_require <- function(package, fun) {
 
 has_gganimate <- function() {
   if (system.file(package = "gganimate") != "") {
-    if (packageVersion("gganimate") > "0.1") {
+    if (utils::packageVersion("gganimate") > "0.1") {
       return(TRUE)
     }
   }
