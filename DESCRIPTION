@@ -15,7 +15,7 @@ Imports:
   lazyeval,
   ggplot2 (>= 2.2.1),
   scales,
-  maps,
+  maps (>= 3.2.0),
   mapdata,
   maptools,
   plot3D,
