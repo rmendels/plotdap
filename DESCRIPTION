@@ -11,6 +11,7 @@ Depends:
 Imports:
   magrittr,
   tidyr,
+  dplyr,
   lazyeval,
   ggplot2 (>= 2.2.1),
   scales,
@@ -23,6 +24,7 @@ Imports:
   rgeos,
   rgdal
 Suggests:
+  gganimate,
   testthat,
   Cairo,
   knitr,

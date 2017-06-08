@@ -32,7 +32,7 @@
 #' @author Carson Sievert
 #' @examples
 #'
-#' plotdap()
+#' # base plotting tends to be faster (especially for grids), but is less extensible
 #' plotdap("base")
 #'
 #' \dontrun{
@@ -558,6 +558,8 @@ get_raster <- function(grid, var) {
   names(r) <- make.names(unique(grid$data$time) %||% "")
   r
 }
+
+utils::globalVariables(c("time", "desc", "lat", "lon"))
 
 latlon_is_valid <- function(x) {
   if (is_raster(x)) {

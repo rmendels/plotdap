@@ -101,7 +101,7 @@ and overview of rerrdap's visualization methods --
 }
 \examples{
 
-plotdap()
+# base plotting tends to be faster (especially for grids), but is less extensible
 plotdap("base")
 
 \dontrun{

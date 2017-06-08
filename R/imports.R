@@ -1,6 +1,8 @@
+#' @import rerddap
 #' @importFrom utils packageVersion
 #' @importFrom stats quantile setNames
 #' @importFrom tidyr gather_
+#' @importFrom dplyr arrange between
 #' @importFrom maps map
 #' @importFrom scales rescale col_numeric
 #' @importFrom lazyeval is_formula f_text f_eval
