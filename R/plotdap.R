@@ -412,7 +412,8 @@ print.ggplotdap <- function(x, ...) {
   )
   if (has_gganimate() && isTRUE(x$animate)) {
     p <- list(p = x$ggplot)
-    print(do.call(gganimate::gganimate, c(p, x$ani.args)))
+    gganimate <- getFromNamespace("gganimate", asNamespace("gganimate"))
+    print(do.call(gganimate, c(p, x$ani.args)))
   } else {
     print(x$ggplot)
   }
