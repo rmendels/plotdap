@@ -1,9 +1,9 @@
-Carson Sievert  
-`r Sys.Date()`  
 
 
 
 # plotdap
+
+[![Build Status](https://travis-ci.org/ropensci/plotdap.svg?branch=master)](https://travis-ci.org/ropensci/plotdap)
 
 The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://github.com/ropensci/rerddap) package.
 
