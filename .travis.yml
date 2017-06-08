@@ -16,7 +16,7 @@ before_install:
 
 r_github_packages:
   - tidyverse/ggplot2
-  - hadley/testthat
+  - dgrtwo/gganimate
 
 after_success:
   - Rscript -e 'covr::codecov()'

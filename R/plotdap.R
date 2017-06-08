@@ -177,7 +177,8 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 
   if (is_ggplotdap(plot)) {
 
-    mapping <- if (animate && "time" %in% names(table) && has_gganimate()) {
+    mapping <- if (animate && "time" %in% names(table)) {
+      try_gganimate()
       plot$animate <- TRUE
       plot$ani.args <- ani.args
       aes_(colour = var, frame = ~time)
@@ -318,7 +319,8 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     s <- sf::st_as_sf(raster::rasterToPolygons(r))
     vars <- setdiff(names(s), "geometry")
     sg <- sf::st_as_sf(tidyr::gather_(s, "variable", "value", vars))
-    mapping <- if (animate && has_gganimate()) {
+    mapping <- if (animate) {
+      try_gganimate()
       plot$animate <- TRUE
       plot$ani.args <- ani.args
       aes_string(fill = "value", frame = "variable")
@@ -410,7 +412,8 @@ print.ggplotdap <- function(x, ...) {
       xlim = xlim, ylim = ylim
     )
   )
-  if (has_gganimate() && isTRUE(x$animate)) {
+  if (isTRUE(x$animate)) {
+    try_gganimate()
     p <- list(p = x$ggplot)
     gganimate <- getFromNamespace("gganimate", asNamespace("gganimate"))
     print(do.call(gganimate, c(p, x$ani.args)))

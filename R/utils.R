@@ -30,7 +30,7 @@ try_require <- function(package, fun) {
        "Please install and try again.", call. = FALSE)
 }
 
-has_gganimate <- function() {
+try_gganimate <- function() {
   if (system.file(package = "gganimate") != "") {
     if (utils::packageVersion("gganimate") > "0.1") {
       return(TRUE)
