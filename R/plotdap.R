@@ -80,7 +80,7 @@
 #'}
 
 plotdap <- function(method = c("ggplot2", "base"),
-                    mapData = maps::map('world', plot = FALSE, fill = TRUE, wrap = c(0, 360)),
+                    mapData = maps::map('world', plot = FALSE, fill = TRUE),
                     crs = NULL, datum = sf::st_crs(4326),
                     mapTitle = NULL, mapFill = "gray80", mapColor = "gray90",
                     ...) {
