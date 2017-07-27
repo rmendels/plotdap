@@ -323,15 +323,18 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       try_gganimate()
       plot$animate <- TRUE
       plot$ani.args <- ani.args
-      aes_string(fill = "value", frame = "variable")
+      aes_string(fill = "value", colour = "value", frame = "variable")
     } else {
-      aes_string(fill = "value")
+      aes_string(fill = "value", colour = "value")
     }
+
     return(
       add_ggplot(
         plot,
-        geom_sf(data = sg, mapping = mapping, size = 0.0001, ...),
-        scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols)
+        geom_sf(data = sg, mapping = mapping, ...),
+        scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols),
+        scale_colour_gradientn(colors = cols),
+        guides(colour = FALSE)
       )
     )
   }
