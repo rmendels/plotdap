@@ -190,7 +190,7 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
       add_ggplot(
         plot,
         geom_sf(data = table, mapping = mapping, size = size, pch = shape, ...),
-        scale_color_gradientn(name = lazyeval::f_text(var), colours = cols)
+        scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
       )
     )
   }
