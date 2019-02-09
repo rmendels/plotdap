@@ -7,16 +7,15 @@
 \alias{add_ggplot}
 \title{Visualize rerddap data}
 \usage{
-plotdap(method = c("ggplot2", "base"), mapData = maps::map("world", plot =
-  FALSE, fill = TRUE), crs = NULL, datum = sf::st_crs(4326),
+plotdap(method = c("ggplot2", "base"), mapData = maps::map("world",
+  plot = FALSE, fill = TRUE), crs = NULL, datum = sf::st_crs(4326),
   mapTitle = NULL, mapFill = "gray80", mapColor = "gray90", ...)
 
-add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"), size = 1.5,
-  shape = 19, animate = FALSE, ani.args = list(filename = "ani.gif"), ...)
+add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),
+  size = 1.5, shape = 19, animate = FALSE, ...)
 
 add_griddap(plot, grid, var, fill = "viridis", maxpixels = 10000,
-  time = mean, animate = FALSE, ani.args = list(filename = "ani.gif"),
-  ...)
+  time = mean, animate = FALSE, ...)
 
 add_ggplot(plot, ...)
 }
@@ -64,8 +63,6 @@ quick visual of the majority of possibilities.}
 Currently only implemented for \code{method='ggplot2'} and requires the
 gganimate package.}
 
-\item{ani.args}{arguments passed along to \code{gganimate()}.}
-
 \item{grid}{a \link{griddap} object.}
 
 \item{fill}{either a character string of length 1 matching a name in \\link[rerddap]{colors}
@@ -88,8 +85,6 @@ Visualize data returned from rerddap servers. Use \code{plotdap()} to initialize
 a plot, specify the plotting method (specifically, 'base' or 'ggplot2'),
 and set some global options/parameters. Then use \code{add_tabledap()}
 and/or \code{add_griddap()} to add "layers" of actual data to be visualized.
-
-Add ggplot2 elements to a plotdap object
 }
 \details{
 The "ggplot2" method is slower than "base" (especially

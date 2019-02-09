@@ -27,9 +27,8 @@ Suggests:
   testthat,
   Cairo,
   knitr,
-  rmarkdown
-Remotes:
-  tidyverse/ggplot2
-RoxygenNote: 6.0.1
+  rmarkdown,
+  gganimate (>= 1.0.0)
+RoxygenNote: 6.1.1
 LazyData: true
 Encoding: UTF-8

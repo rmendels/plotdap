@@ -32,14 +32,13 @@ try_require <- function(package, fun) {
 
 try_gganimate <- function() {
   if (system.file(package = "gganimate") != "") {
-    if (utils::packageVersion("gganimate") > "0.1") {
+    if (utils::packageVersion("gganimate") >= "1.0.0") {
       return(TRUE)
     }
   }
   stop(
     "This functionality requires a recent version of the gganimate package.\n",
-    "Please install via devtools:\n",
-    "devtools::install_github('dgrtwo/gganimate')",
+    "Please install via: `install.packages('gganimate')`",
     call. = FALSE
   )
   FALSE

@@ -142,13 +142,11 @@ plotdap <- function(method = c("ggplot2", "base"),
 #' @param animate whether to animate over the \code{time} variable (if it exists).
 #' Currently only implemented for \code{method='ggplot2'} and requires the
 #' gganimate package.
-#' @param ani.args arguments passed along to \code{gganimate()}.
 #' @export
 #' @rdname plotdap
 
 add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
-                         size = 1.5, shape = 19, animate = FALSE,
-                         ani.args = list(filename = "ani.gif"), ...) {
+                         size = 1.5, shape = 19, animate = FALSE, ...) {
   if (!is.table(table))
     stop("The `table` argument must be a `tabledap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
@@ -177,19 +175,15 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 
   if (is_ggplotdap(plot)) {
 
-    mapping <- if (animate && "time" %in% names(table)) {
+    if (animate && "time" %in% names(table)) {
       try_gganimate()
-      plot$animate <- TRUE
-      plot$ani.args <- ani.args
-      aes_(colour = var, frame = ~time)
-    } else {
-      aes_(colour = var)
+      plot$ggplot <- plot$ggplot + gganimate::transition_time(time)
     }
 
     return(
       add_ggplot(
         plot,
-        geom_sf(data = table, mapping = mapping, size = size, pch = shape, ...),
+        geom_sf(data = table, mapping = aes_(colour = var), size = size, pch = shape, ...),
         scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
       )
     )
@@ -239,12 +233,11 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 #' @rdname plotdap
 
 add_griddap <- function(plot, grid, var, fill = "viridis",
-                        maxpixels = 10000, time = mean, animate = FALSE,
-                        ani.args = list(filename = "ani.gif"), ...) {
+                        maxpixels = 10000, time = mean, animate = FALSE, ...) {
   if (!is.grid(grid))
     stop("The `grid` argument must be a `griddap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
-    stop("The `var`` argument must be a formula", call. = FALSE)
+    stop("The `var` argument must be a formula", call. = FALSE)
   if (!is.function(time) && !is.character(time))
     stop("The `time` argument must be a function or a character string", call. = FALSE)
 
@@ -319,19 +312,15 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     s <- sf::st_as_sf(raster::rasterToPolygons(r))
     vars <- setdiff(names(s), "geometry")
     sg <- sf::st_as_sf(tidyr::gather_(s, "variable", "value", vars))
-    mapping <- if (animate) {
+    if (animate) {
       try_gganimate()
-      plot$animate <- TRUE
-      plot$ani.args <- ani.args
-      aes_string(fill = "value", colour = "value", frame = "variable")
-    } else {
-      aes_string(fill = "value", colour = "value")
+      plot$ggplot <- plot$ggplot + gganimate::transition_states(variable, transition_length = 2, state_length = 1)
     }
 
     return(
       add_ggplot(
         plot,
-        geom_sf(data = sg, mapping = mapping, ...),
+        geom_sf(data = sg, mapping = aes_string(fill = "value", colour = "value"), ...),
         scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols),
         scale_colour_gradientn(colors = cols),
         guides(colour = FALSE)
@@ -415,14 +404,7 @@ print.ggplotdap <- function(x, ...) {
       xlim = xlim, ylim = ylim
     )
   )
-  if (isTRUE(x$animate)) {
-    try_gganimate()
-    p <- list(p = x$ggplot)
-    gganimate <- getFromNamespace("gganimate", asNamespace("gganimate"))
-    print(do.call(gganimate, c(p, x$ani.args)))
-  } else {
-    print(x$ggplot)
-  }
+  print(x$ggplot)
   invisible(x)
 }
 
@@ -710,3 +692,6 @@ latNames <- function() {
 lonNames <- function() {
   sub("\\$", "", sub("\\^", "", strsplit(lonPattern(), "|", fixed = TRUE)[[1]]))
 }
+
+
+utils::globalVariables("variable")
