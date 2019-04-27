@@ -32,51 +32,62 @@
 #' @author Carson Sievert
 #' @examples
 #'
-#' # base plotting tends to be faster (especially for grids), but is less extensible
-#' plotdap("base")
+#' # base plotting tends to be faster (especially for grids),
+#' # but is less extensible plotdap("base")
 #'
-#' \dontrun{
+#' # code to obtain datasets using `rerddap` given as comment
+#' # actual datasets in data folder to meet execution timings
+#'
 #' # tabledap examples
-#' sardines <- tabledap(
-#'   'FRDCPSTrawlLHHaulCatch',
-#'   fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
-#'   'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"'
-#'  )
-#'
+#' # sardines <- tabledap(
+#'  # 'FRDCPSTrawlLHHaulCatch',
+#'  # fields = c('latitude',  'longitude', 'time',
+#'           # 'scientific_name', 'subsample_count'),
+#'   # 'time>=2010-01-01', 'time<=2012-01-01',
+#'  # 'scientific_name="Sardinops sagax"'
+#'  # )
 #' p <- plotdap()
-#' add_tabledap(p, sardines, ~subsample_count)
-#' add_tabledap(p, sardines, ~log(subsample_count))
+#' p <- add_tabledap(p, sardines, ~subsample_count)
+#' p1 <- add_tabledap(p, sardines, ~log2(subsample_count))
 #'
 #' # using base R plotting
 #' p <- plotdap("base")
-#' add_tabledap(p, sardines, ~subsample_count)
+#' p <- add_tabledap(p, sardines, ~subsample_count)
 #'
 #' # robinson projection
 #' p <- plotdap(crs = "+proj=robin")
-#' add_tabledap(p, sardines, ~subsample_count)
+#' p <- add_tabledap(p, sardines, ~subsample_count)
 #'
 #' # griddap examples
-#' murSST <- griddap(
-#'   'jplMURSST41', latitude = c(22, 51), longitude = c(-140, -105),
-#'   time = c('last', 'last'), fields = 'analysed_sst'
-#'  )
-#' p <- plotdap(crs = "+proj=robin")
-#' add_griddap(p, murSST, ~analysed_sst)
+#' # murSST <- griddap(
+#'   # 'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
+#'   # time = c('last', 'last'), fields = 'analysed_sst'
+#'  # )
+#' p <- plotdap("base", crs = "+proj=robin")
+#' p <- add_griddap(p, murSST, ~analysed_sst)
 #'
 #' # layer tables on top of grids
-#' plotdap("base") %>%
-#'   add_griddap(murSST, ~sst) %>%
+#' p <- plotdap("base") %>%
+#'   add_griddap(murSST, ~analysed_sst) %>%
 #'   add_tabledap(sardines, ~subsample_count)
 #'
 #' # multiple time periods
-#' wind <- griddap(
-#'   'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
-#'   latitude = c(30, 50), longitude = c(210, 240),
-#'   fields = 'x_wind'
-#' )
+#' # wind <- griddap(
+#'   # 'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
+#'   # latitude = c(30, 50), longitude = c(210, 240),
+#'   # fields = 'x_wind'
+#' # )
 #' p <- plotdap("base", mapTitle = "Average wind over time")
-#' add_griddap(p, wind, ~x_wind)
+#' p <- add_griddap(p, QMwind, ~x_wind)
 #'
+#'\donttest{
+#' # ggplot2 add_griddap functions take too long for CRAN
+#' # but here are the same examples from above
+#' p <- plotdap(crs = "+proj=robin")
+#' add_griddap(p, murSST, ~analysed_sst)
+#'
+#' p <- plotdap(mapTitle = "Average wind over time")
+#' add_griddap(p, QMwind, ~x_wind)
 #'}
 
 plotdap <- function(method = c("ggplot2", "base"),
@@ -142,11 +153,13 @@ plotdap <- function(method = c("ggplot2", "base"),
 #' @param animate whether to animate over the \code{time} variable (if it exists).
 #' Currently only implemented for \code{method='ggplot2'} and requires the
 #' gganimate package.
+#' @param cumulative - if animation should be cumulative -default FALSE
 #' @export
 #' @rdname plotdap
 
 add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
-                         size = 1.5, shape = 19, animate = FALSE, ...) {
+                         size = 1.5, shape = 19, animate = FALSE,
+                         cumulative = FALSE, ...) {
   if (!is.table(table))
     stop("The `table` argument must be a `tabledap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
@@ -177,13 +190,18 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 
     if (animate && "time" %in% names(table)) {
       try_gganimate()
-      plot$ggplot <- plot$ggplot + gganimate::transition_time(time)
+      plot$animate <- TRUE
+      plot$nper <- length(unique(table$time))
+      plot$ggplot <- plot$ggplot +
+          gganimate::transition_manual(factor(time), cumulative = cumulative) +
+          ggplot2::labs(title = "{current_frame}")
     }
 
     return(
       add_ggplot(
         plot,
-        geom_sf(data = table, mapping = aes_(colour = var), size = size, pch = shape, ...),
+        geom_sf(data = table, mapping = aes_(colour = var),
+                size = size, pch = shape, ...),
         scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
       )
     )
@@ -207,9 +225,7 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
     )
   )
 
-  plot$layers <- c(
-    plot$layers, list(table)
-  )
+  plot$layers <- c(plot$layers, list(table))
 
   plot
 }
@@ -233,15 +249,18 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
 #' @rdname plotdap
 
 add_griddap <- function(plot, grid, var, fill = "viridis",
-                        maxpixels = 10000, time = mean, animate = FALSE, ...) {
+                        maxpixels = 10000, time = mean, animate = FALSE,
+                        cumulative = FALSE, ...) {
   if (!is.grid(grid))
     stop("The `grid` argument must be a `griddap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
     stop("The `var` argument must be a formula", call. = FALSE)
   if (!is.function(time) && !is.character(time))
-    stop("The `time` argument must be a function or a character string", call. = FALSE)
+    stop("The `time` argument must be a function or a character string",
+         call. = FALSE)
 
-  # create raster object from filename; otherwise create a sensible raster from data
+  # create raster object from filename;
+  # otherwise create a sensible raster from data
   r <- get_raster(grid, var)
 
   # checks for naming and numeric lat/lon
@@ -251,7 +270,10 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 
   # if necessary, reduce a RasterBrick to a RasterLayer
   # http://gis.stackexchange.com/questions/82390/summarize-values-from-a-raster-brick-by-latitude-bands-in-r
-  if (raster::nlayers(r) > 1) {
+    if (body(time) == 'UseMethod("mean")') {
+      time <- function(x) mean(x, na.rm = TRUE)
+    }
+    if (raster::nlayers(r) > 1) {
     if (is.function(time)) {
       r <- raster::calc(r, time)
     } else {
@@ -300,7 +322,13 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 
   # assumes we apply sf::st_crs() to plot on initiation
   if (inherits(plot$crs, "crs")) {
-    r <- raster::projectRaster(r, crs = plot$crs$proj4string)
+    crs_string <- plot$crs$proj4string
+    if (!is.na(plot$crs$epsg)) {
+      epsg_string <- paste0("+init=epsg:", plot$crs$epsg)
+      crs_string <- paste(epsg_string, crs_string)
+    }
+    #r <- raster::projectRaster(r, crs = plot$crs$proj4string)
+    r <- raster::projectRaster(r, crs = crs_string)
   }
 
   # color scale
@@ -314,13 +342,18 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     sg <- sf::st_as_sf(tidyr::gather_(s, "variable", "value", vars))
     if (animate) {
       try_gganimate()
-      plot$ggplot <- plot$ggplot + gganimate::transition_states(variable, transition_length = 2, state_length = 1)
+      plot$animate <- TRUE
+      plot$nper <- length(sg)
+      plot$ggplot <- plot$ggplot +
+              gganimate::transition_manual(variable, cumulative = cumulative) +
+              ggplot2::labs(title = "{current_frame}")
     }
 
     return(
       add_ggplot(
         plot,
-        geom_sf(data = sg, mapping = aes_string(fill = "value", colour = "value"), ...),
+        geom_sf(data = sg,
+                mapping = aes_string(fill = "value", colour = "value"), ...),
         scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols),
         scale_colour_gradientn(colors = cols),
         guides(colour = FALSE)
@@ -392,20 +425,41 @@ add_ggplot <- function(plot, ...) {
 #' @param ... currently unused
 #' @export
 print.ggplotdap <- function(x, ...) {
-  # find a sensible x/y range....assuming all the layer data is sf
+    # find a sensible x/y range....assuming all the layer data is sf
   gg <- x$ggplot
-  layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
-  bbs <- lapply(layer_data[-1], sf::st_bbox)
+  dots <- list(...)
+  if (isTRUE(dots$landmask)) {
+    gg$layers <- rev(gg$layers)
+    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
+    bbs <- lapply(layer_data[1], sf::st_bbox)
+    x$ggplot <- gg
+  } else {
+    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
+    bbs <- lapply(layer_data[-1], sf::st_bbox)
+  }
   xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
   ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
-  x <- add_ggplot(
+  suppressMessages(x <- add_ggplot(
     x, coord_sf(
       crs = x$crs, datum = x$datum,
       xlim = xlim, ylim = ylim
     )
-  )
-  print(x$ggplot)
-  invisible(x)
+  ))
+#  x <- add_ggplot(
+#    x, coord_sf(
+#      crs = x$crs, datum = x$datum,
+#      xlim = xlim, ylim = ylim
+#    )
+#  )
+
+  if (isTRUE(x$animate)) {
+    print(gganimate::animate(x$ggplot, nframes = x$nper,
+                             fps = 1, duration = x$nper))
+    invisible(x)
+  } else {
+    print(x$ggplot)
+    invisible(x)
+  }
 }
 
 
@@ -439,6 +493,7 @@ print.plotdap <- function(x, ...) {
     graticule = graticule,
     #setParUsrBB = TRUE,
     bty = "n",
+    reset = FALSE,
     ...
   )
 
@@ -548,6 +603,7 @@ get_raster <- function(grid, var) {
   r
 }
 
+
 utils::globalVariables(c("time", "desc", "lat", "lon"))
 
 latlon_is_valid <- function(x) {
@@ -573,16 +629,6 @@ latlon_is_valid <- function(x) {
 }
 
 latlon_adjust <- function(x) {
-  # -------------------------------------------------------------------------
-  # The following comments are based on a correspondence with Roy Mendelssohn:
-  # -------------------------------------------------------------------------
-
-  # We can always assume (-90 < latitude < 90),
-  # but ordering may go (north -> south) rather than (south -> north)...
-  # does this even really matter?
-
-  # Longitudes can either be (0, 360) or (-180, 180)...
-  # put them all on (-180, 180)
   if (is.table(x)) {
 
     lonIDX <- grep(lonPattern(), names(x))
@@ -596,10 +642,10 @@ latlon_adjust <- function(x) {
         call. = FALSE
       )
 
-    } else if (all(dplyr::between(lon, 0, 360))) {
+    } else if (all(dplyr::between(lon, 180, 360))) {
 
-      idx <- isTRUE(lon > 180)
-      x[[lonIDX]][idx] <- lon[idx] - 360
+      #idx <- isTRUE(lon > 180)
+      x[[lonIDX]] <- lon - 360
 
     } else if (all(dplyr::between(lon, -180, 180))) {
 
@@ -628,7 +674,7 @@ latlon_adjust <- function(x) {
         call. = FALSE
       )
 
-    } else if (all(dplyr::between(lon, 0, 360))) {
+    } else if (all(dplyr::between(lon, 180, 360))) {
 
       newExt <- raster::extent(
         c(c(ext@xmin, ext@xmax) - 360, ext@ymin, ext@ymax)
@@ -639,6 +685,9 @@ latlon_adjust <- function(x) {
 
       # nothing to do....
 
+    } else if (all(dplyr::between(lon, 0, 360))) {
+
+      # nothing to do....
     } else {
 
       # TODO: report the invalid values?

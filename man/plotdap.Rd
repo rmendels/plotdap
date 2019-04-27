@@ -12,10 +12,10 @@ plotdap(method = c("ggplot2", "base"), mapData = maps::map("world",
   mapTitle = NULL, mapFill = "gray80", mapColor = "gray90", ...)
 
 add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),
-  size = 1.5, shape = 19, animate = FALSE, ...)
+  size = 1.5, shape = 19, animate = FALSE, cumulative = FALSE, ...)
 
 add_griddap(plot, grid, var, fill = "viridis", maxpixels = 10000,
-  time = mean, animate = FALSE, ...)
+  time = mean, animate = FALSE, cumulative = FALSE, ...)
 
 add_ggplot(plot, ...)
 }
@@ -63,6 +63,8 @@ quick visual of the majority of possibilities.}
 Currently only implemented for \code{method='ggplot2'} and requires the
 gganimate package.}
 
+\item{cumulative}{- if animation should be cumulative -default FALSE}
+
 \item{grid}{a \link{griddap} object.}
 
 \item{fill}{either a character string of length 1 matching a name in \\link[rerddap]{colors}
@@ -96,51 +98,62 @@ and overview of rerrdap's visualization methods --
 }
 \examples{
 
-# base plotting tends to be faster (especially for grids), but is less extensible
-plotdap("base")
+# base plotting tends to be faster (especially for grids),
+# but is less extensible plotdap("base")
 
-\dontrun{
+# code to obtain datasets using `rerddap` given as comment
+# actual datasets in data folder to meet execution timings
+
 # tabledap examples
-sardines <- tabledap(
-  'FRDCPSTrawlLHHaulCatch',
-  fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
-  'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"'
- )
-
+# sardines <- tabledap(
+ # 'FRDCPSTrawlLHHaulCatch',
+ # fields = c('latitude',  'longitude', 'time',
+          # 'scientific_name', 'subsample_count'),
+  # 'time>=2010-01-01', 'time<=2012-01-01',
+ # 'scientific_name="Sardinops sagax"'
+ # )
 p <- plotdap()
-add_tabledap(p, sardines, ~subsample_count)
-add_tabledap(p, sardines, ~log(subsample_count))
+p <- add_tabledap(p, sardines, ~subsample_count)
+p1 <- add_tabledap(p, sardines, ~log2(subsample_count))
 
 # using base R plotting
 p <- plotdap("base")
-add_tabledap(p, sardines, ~subsample_count)
+p <- add_tabledap(p, sardines, ~subsample_count)
 
 # robinson projection
 p <- plotdap(crs = "+proj=robin")
-add_tabledap(p, sardines, ~subsample_count)
+p <- add_tabledap(p, sardines, ~subsample_count)
 
 # griddap examples
-murSST <- griddap(
-  'jplMURSST41', latitude = c(22, 51), longitude = c(-140, -105),
-  time = c('last', 'last'), fields = 'analysed_sst'
- )
-p <- plotdap(crs = "+proj=robin")
-add_griddap(p, murSST, ~analysed_sst)
+# murSST <- griddap(
+  # 'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
+  # time = c('last', 'last'), fields = 'analysed_sst'
+ # )
+p <- plotdap("base", crs = "+proj=robin")
+p <- add_griddap(p, murSST, ~analysed_sst)
 
 # layer tables on top of grids
-plotdap("base") \%>\%
-  add_griddap(murSST, ~sst) \%>\%
+p <- plotdap("base") \%>\%
+  add_griddap(murSST, ~analysed_sst) \%>\%
   add_tabledap(sardines, ~subsample_count)
 
 # multiple time periods
-wind <- griddap(
-  'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
-  latitude = c(30, 50), longitude = c(210, 240),
-  fields = 'x_wind'
-)
+# wind <- griddap(
+  # 'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
+  # latitude = c(30, 50), longitude = c(210, 240),
+  # fields = 'x_wind'
+# )
 p <- plotdap("base", mapTitle = "Average wind over time")
-add_griddap(p, wind, ~x_wind)
+p <- add_griddap(p, QMwind, ~x_wind)
 
+\donttest{
+# ggplot2 add_griddap functions take too long for CRAN
+# but here are the same examples from above
+p <- plotdap(crs = "+proj=robin")
+add_griddap(p, murSST, ~analysed_sst)
+
+p <- plotdap(mapTitle = "Average wind over time")
+add_griddap(p, QMwind, ~x_wind)
 }
 
 library(ggplot2)

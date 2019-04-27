@@ -1,34 +1,40 @@
 Package: plotdap
-Title: Easily visualize data from 'ERDDAP' Servers via the rerddap package
-Version: 0.0.1
-Authors@R: c(person("Carson", "Sievert", role = c("aut","cre"), email = "cpsievert1@gmail.com"))
+Title: plotdap: Easily Visualize Data from 'ERDDAP' Servers via the rerddap Package
+Version: 0.0.2
+Date: 2019-04-29
+Authors@R: c(
+    person("Carson", "Sievert", role = "aut"),
+    person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
 Description: Easily visualize 'tabledap' and 'griddap' objects obtained via the rerddap package.
 License: MIT + file LICENSE
 URL: https://github.com/ropensci/plotdap
 BugReports: https://github.com/ropensci/plotdap/issues
 Depends: 
-  rerddap
+    R (>= 3.5.0), 
+   rerddap
 Imports:
-  magrittr,
-  tidyr,
   dplyr,
+  gganimate,
+  ggplot2 (>= 3.1.0),
   lazyeval,
-  ggplot2 (>= 2.2.1),
-  scales,
-  maps (>= 3.2.0),
+  lubridate,
+  magrittr,
   mapdata,
+  maps (>= 3.2.0),
   maptools,
   plot3D,
-  raster,
-  sf,
+  rgdal,
   rgeos,
-  rgdal
+  raster,
+  scales,
+  sf,
+  tidyr
 Suggests:
   testthat,
   Cairo,
   knitr,
-  rmarkdown,
-  gganimate (>= 1.0.0)
+  rmarkdown
 RoxygenNote: 6.1.1
 LazyData: true
 Encoding: UTF-8
+VignetteBuilder: knitr
