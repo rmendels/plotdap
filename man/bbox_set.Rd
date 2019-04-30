@@ -17,7 +17,7 @@ bbox_set(plotobj, xlim, ylim)
 a plotdap object
 }
 \description{
-\code{bbox_set}chnages the bounding box in an plotdap object.
+\code{bbox_set}changes the bounding box in an plotdap object.
 Particularly needed if using gganimate::animate()
 }
 \examples{

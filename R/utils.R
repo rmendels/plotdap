@@ -32,13 +32,14 @@ try_require <- function(package, fun) {
 
 try_gganimate <- function() {
   if (system.file(package = "gganimate") != "") {
-    if (utils::packageVersion("gganimate") >= "1.0.0") {
+    if (utils::packageVersion("gganimate") > "0.1") {
       return(TRUE)
     }
   }
   stop(
     "This functionality requires a recent version of the gganimate package.\n",
-    "Please install via: `install.packages('gganimate')`",
+    "Please install via devtools:\n",
+    "devtools::install_github('dgrtwo/gganimate')",
     call. = FALSE
   )
   FALSE
@@ -78,7 +79,9 @@ format_table <- function(table, .info) {
   # format time
   if ("time" %in% vars) {
     # TODO: will this cover all cases?
-    table[["time"]] <- as.Date(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    #table[["time"]] <- as.Date(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    #table[["time"]] <- lubridate::as_datetime(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    table[["time"]] <- lubridate::as_datetime(table[["time"]], tz = "GMT")
   }
 
   table

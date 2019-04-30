@@ -1,6 +1,6 @@
 #' change bounding box in plotdap object
 #'
-#' \code{bbox_set}chnages the bounding box in an plotdap object.
+#' \code{bbox_set}changes the bounding box in an plotdap object.
 #' Particularly needed if using gganimate::animate()
 #' @export
 #' @param plotobj valid plotdap object

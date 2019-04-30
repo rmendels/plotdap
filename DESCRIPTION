@@ -1,5 +1,5 @@
 Package: plotdap
-Title: plotdap: Easily Visualize Data from 'ERDDAP' Servers via the rerddap Package
+Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
 Version: 0.0.2
 Date: 2019-04-29
 Authors@R: c(
