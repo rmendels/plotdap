@@ -1,3 +1,4 @@
+^README\.Rmd$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .travis.yml
@@ -5,3 +6,8 @@ README.Rmd
 README_cache
 README_files
 myPlot.png
+^README_files$
+^README_old\.md$
+^README_old\.Rmd$
+^cran-comments\.md$
+^tests$

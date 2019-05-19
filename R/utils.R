@@ -79,7 +79,9 @@ format_table <- function(table, .info) {
   # format time
   if ("time" %in% vars) {
     # TODO: will this cover all cases?
-    table[["time"]] <- as.Date(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    #table[["time"]] <- as.Date(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    #table[["time"]] <- lubridate::as_datetime(table[["time"]], origin = '1970-01-01', tz = "GMT")
+    table[["time"]] <- lubridate::as_datetime(table[["time"]], tz = "GMT")
   }
 
   table
