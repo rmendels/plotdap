@@ -47,4 +47,10 @@ Possibly mis-spelled words in DESCRIPTION:
   
 Spelling is correct
 
+### Comments
+
+In response to reviewer's comments on last submission, the `rerddap` that
+would download the data that is contained in the package datasets have 
+been uncommented and put in \donttest{}.  All other requested changes made.
+
 * This is a new release.

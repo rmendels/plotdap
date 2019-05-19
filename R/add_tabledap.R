@@ -26,20 +26,22 @@
 #' # base plotting tends to be faster,
 #' # but is less extensible plotdap("base")
 #'
-#' # code to obtain datasets using `rerddap` given as comment
-#' # actual datasets in data folder to meet execution timings
+#' # test datasets in data folder to meet execution timings
+#' # code given to extract the data
 #'
-#' # tabledap examples
-#' # sardines <- tabledap(
-#'  # 'FRDCPSTrawlLHHaulCatch',
-#'  # fields = c('latitude',  'longitude', 'time',
-#'           # 'scientific_name', 'subsample_count'),
-#'   # 'time>=2010-01-01', 'time<=2012-01-01',
-#'  # 'scientific_name="Sardinops sagax"'
-#'  # )
+#'\donttest{
+#' sardines <- tabledap(
+#'  'FRDCPSTrawlLHHaulCatch',
+#'  fields = c('latitude',  'longitude', 'time',
+#'           'scientific_name', 'subsample_count'),
+#'   'time>=2010-01-01', 'time<=2012-01-01',
+#'   scientific_name="Sardinops sagax"'
+#'   )
+#'}
+#'
 #' p <- plotdap()
-#' p <- add_tabledap(p, sardines, ~subsample_count)
-#' p1 <- add_tabledap(p, sardines, ~log2(subsample_count))
+#' p1 <- add_tabledap(p, sardines, ~subsample_count)
+#' p2 <- add_tabledap(p, sardines, ~log2(subsample_count))
 #'
 #' # using base R plotting
 #' p <- plotdap("base")

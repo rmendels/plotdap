@@ -50,37 +50,39 @@ a 'plotdap' map
 # base plotting tends to be faster,
 # but is less extensible plotdap("base")
 
-# code to obtain datasets using `rerddap` given as comment
 # actual datasets in data folder to meet execution timings
 
-# murSST <- griddap(
-  # 'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
-  # time = c('last', 'last'), fields = 'analysed_sst'
- # )
-p <- plotdap("base", crs = "+proj=robin")
-p <- add_griddap(p, murSST, ~analysed_sst)
-
-# layer tables on top of grids
-p <- plotdap("base") \%>\%
-  add_griddap(murSST, ~analysed_sst) \%>\%
-  add_tabledap(sardines, ~subsample_count)
-
-# multiple time periods
-# wind <- griddap(
-  # 'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
-  # latitude = c(30, 50), longitude = c(210, 240),
-  # fields = 'x_wind'
-# )
-p <- plotdap("base", mapTitle = "Average wind over time")
-p <- add_griddap(p, QMwind, ~x_wind)
-
 \donttest{
-# ggplot2 add_griddap functions take too long for CRAN
-# but here are the same examples from above
+ murSST <- griddap(
+   'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
+   time = c('last', 'last'), fields = 'analysed_sst'
+  )
+
+ QMwind <- griddap(
+   'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
+   latitude = c(30, 50), longitude = c(210, 240),
+   fields = 'x_wind'
+ )
+
 p <- plotdap(crs = "+proj=robin")
 add_griddap(p, murSST, ~analysed_sst)
 
 p <- plotdap(mapTitle = "Average wind over time")
 add_griddap(p, QMwind, ~x_wind)
+
 }
+
+p <- plotdap("base", crs = "+proj=robin")
+p <- add_griddap(p, murSST, ~analysed_sst)
+
+# layer tables on top of grids
+require(magrittr)
+p <- plotdap("base") \%>\%
+  add_griddap(murSST, ~analysed_sst) \%>\%
+  add_tabledap(sardines, ~subsample_count)
+
+# multiple time periods
+p <- plotdap("base", mapTitle = "Average wind over time")
+p <- add_griddap(p, QMwind, ~x_wind)
+
 }
