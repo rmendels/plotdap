@@ -1,6 +1,6 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 0.0.2
+Version: 0.0.3
 Date: 2019-04-29
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
