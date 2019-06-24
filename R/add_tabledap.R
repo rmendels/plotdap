@@ -16,8 +16,7 @@
 #' Currently only implemented for \code{method='ggplot2'} and requires the
 #' gganimate package.
 #' @param cumulative - if animation should be cumulative -default FALSE
-#' @param ... arguments passed along to \code{geom_sf()}
-#' (if \code{method='ggplot2'}, otherwise ignored).
+#' @param ... arguments passed along to \code{geom_sf()} (if \code{method='ggplot2'}, otherwise ignored).
 #' @return A plotdap object
 #' @export
 #' @rdname add_tabledap
@@ -32,10 +31,9 @@
 #'\donttest{
 #' sardines <- tabledap(
 #'  'FRDCPSTrawlLHHaulCatch',
-#'  fields = c('latitude',  'longitude', 'time',
-#'           'scientific_name', 'subsample_count'),
+#'  fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
 #'   'time>=2010-01-01', 'time<=2012-01-01',
-#'   scientific_name="Sardinops sagax"'
+#'   scientific_name="Sardinops sagax"
 #'   )
 #'}
 #'
