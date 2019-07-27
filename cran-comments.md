@@ -1,56 +1,33 @@
+## This is a minor update 
+
+- fix small error in docs that was causing pkgdown to fail
+- fixed Import and Namespace problems reported on CRAN checks
+- On Windows,  previous version built with --no-vignettes please continue that
+if Vignette build takes too long
+- fixed single note on VignetteIndexEntry
+
 ## Test environments
-* local OS X install, R 3.5.3
-* Fedora Linux, R-devel, clang, gfortran (on RHub)
+* local OS X install, R 3.6.1
+* Fedora Linux on RHub)
 * win-builder (devel and release)
 
 ## R CMD check results
 
 ### OS X
 
-Duration: 8m 35.2s
+Duration: 3m 53s
 
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
-   
+
 ### Winbuilder release
-New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  rerddap (9:81)
-  
- Spelling is correct
-
+OK
 
 ### Winbuilder devel
 
-New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  rerddap (9:81)
-
-Spelling is correct
+OK
 
 ### RHUb Windows Server 2008 R2 SP1, R-devel, 32/64 bit
 
-New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  rerddap (9:81)
-  
- Spelling is Correct
-
+OK
 ### RHub Fedora
-
-New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  rerddap (9:81)
-  
-Spelling is correct
-
-### Comments
-
-In response to reviewer's comments on last submission, the `rerddap` that
-would download the data that is contained in the package datasets have 
-been uncommented and put in \donttest{}.  All other requested changes made.
-
-* This is a new release.
+OK

@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
 Version: 0.0.3
-Date: 2019-04-29
+Date: 2019-07-25
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 URL: https://github.com/ropensci/plotdap
 BugReports: https://github.com/ropensci/plotdap/issues
 Depends: 
-    R (>= 3.5.0), 
+   R (>= 3.5.0), 
    rerddap
 Imports:
   dplyr,
@@ -19,21 +19,20 @@ Imports:
   lazyeval,
   lubridate,
   magrittr,
-  mapdata,
-  maps (>= 3.2.0),
+  maps,
   maptools,
-  plot3D,
+  raster,
   rgdal,
   rgeos,
-  raster,
   scales,
   sf,
   tidyr
 Suggests:
-  testthat,
   Cairo,
   knitr,
-  rmarkdown
+  mapdata,
+  rmarkdown,
+  testthat
 RoxygenNote: 6.1.1
 LazyData: true
 Encoding: UTF-8
