@@ -47,7 +47,7 @@ plotdap <- function(method = c("ggplot2", "base"),
   method <- match.arg(method, method)
 
   # packages used in both methods
-  require_packages(c("sf", "maps", "lazyeval"))
+  require_packages(c("sf", "maps", "lazyeval", "rgeos", "rgdal", "maptools"))
 
   # maps is bad at namespacing
   try_require("mapdata", "plotdap")

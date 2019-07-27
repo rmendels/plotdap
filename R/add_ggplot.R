@@ -10,14 +10,11 @@
 #' @rdname add_ggplot
 #' @examples
 #'
-#' library(ggplot2)
-#'
-#' add_ggplot(
-#'  plotdap(
-#'    crs = "+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs",
-#'    mapColor = "black"
-#'  ),
-#'  theme_bw()
+#' p <- plotdap(
+#'   crs = "+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs")
+#' p <- add_ggplot(
+#'  p,
+#'  ggplot2::theme_bw()
 #' )
 #'
 #'

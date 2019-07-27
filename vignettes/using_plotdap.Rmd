@@ -4,7 +4,7 @@ author: ""
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Using plotdap}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -243,22 +243,7 @@ p2
 ```
 
 
-```{r plot_sardines, echo = FALSE, out.width = '.49\\linewidth', fig.width = 3, fig.height = 4, message = FALSE, warning = FALSE}
-p1 <- add_tabledap(
-  plotdap(crs = "+proj=robin",  mapTitle = "subsample count"), 
-  sardines, 
-  ~subsample_count
-)
-p2 <- add_tabledap(
-  plotdap(crs = "+proj=robin", mapTitle = "Log subsample count"), 
-  sardines, 
-  ~log2(subsample_count)
-) 
-
-p1
-p2
-```
-
+![](sardines.png)
 
 
 ## Modifying `tabledap()` layers
@@ -285,25 +270,7 @@ p2
 ```
 
 
-```{r plot_sardines2, echo = FALSE, fig.hold = TRUE, out.width = '.49\\linewidth', fig.width = 3, fig.height = 4, message = FALSE, warning = FALSE}
-p1 <- add_tabledap(
-  plotdap(crs = "+proj=robin", mapTitle = "Sardines - change color"), 
-  sardines, 
-  ~subsample_count, 
-  color = "density", 
-)
-p2  <- add_tabledap(
-  plotdap(crs = "+proj=robin", mapTitle = "Sardines - change shape and size"), 
-  sardines, 
-  ~subsample_count, 
-  shape = 4,
-  size = 1.
-  
-)
-p1
-p2
-```
-
+![](sardines2.png)
 
 For further details about these arguments, please refer to the documentation on `help(add_tabledap)`.
 
