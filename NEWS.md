@@ -1,3 +1,7 @@
+# plotdap 0.0.4
+* fixed changed SODA datasetid in vignette
+* fixed Namespace and Import problems
+
 # plotdap 0.0.3
 * fixed small bug in an example that was causing 'pgkdown' to fail
 * fixed Namespace and Import problems

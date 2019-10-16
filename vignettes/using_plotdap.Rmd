@@ -492,13 +492,13 @@ The “Simple Ocean Data Assimilation (SODA)” model (see https://www.atmos.umd
 
 First, get the SODA data:
 
-```{r soda70_get, fig.align = 'center', fig.height = 3, fig.width = 5,  message = FALSE, warning = FALSE}
-soda70Info <- rerddap::info('hawaii_d90f_20ee_c4cb')
+```{r soda70_get, message = FALSE, warning = FALSE}
+soda70Info <- rerddap::info('erdSoda331oceanmday')
 xpos <- c(135.25, 240.25)
 ypos <- c(20.25, 60.25)
 zpos <- c(70.02, 70.02)
 tpos <- c('2010-12-15', '2010-12-15')
-soda70 <- griddap(soda70Info,  
+soda70 <- rerddap::griddap(soda70Info,  
                   longitude = xpos, 
                   latitude = ypos, 
                   time = tpos, 
