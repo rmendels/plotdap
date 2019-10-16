@@ -1,10 +1,10 @@
 ## This is a minor update 
 
-- fix small error in docs that was causing pkgdown to fail
+- fixed URL change in vignette
 - fixed Import and Namespace problems reported on CRAN checks
 - On Windows,  previous version built with --no-vignettes please continue that
 if Vignette build takes too long
-- fixed single note on VignetteIndexEntry
+
 
 ## Test environments
 * local OS X install, R 3.6.1
