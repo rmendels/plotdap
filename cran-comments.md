@@ -1,10 +1,6 @@
-## This is a minor update 
+## This is a minor bugfix update 
 
-- fixed URL change in vignette
-- fixed Import and Namespace problems reported on CRAN checks
-- On Windows,  previous version built with --no-vignettes please continue that
-if Vignette build takes too long
-
+fixed bug in using animation in add_griddap()
 
 ## Test environments
 * local OS X install, R 3.6.1
@@ -26,7 +22,7 @@ OK
 
 OK
 
-### RHUb Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+### RHUb Windows Server
 
 OK
 ### RHub Fedora

@@ -149,7 +149,7 @@ viirsSST <- rerddap::griddap(sstInfo,
 w <- map("worldHires", xlim = c(-140., -114), ylim = c(30., 42.), 
          fill = TRUE, plot = FALSE)
 # map using that outline,  temperature color from cmocean
-add_griddap(plotdap(mapData = w), viirsSST, ~sst, fill = "temperature" )
+add_griddap(plotdap(mapData = w), viirsSST, ~sst, fill = "thermal" )
 
 ```
 
@@ -213,12 +213,13 @@ More advanced users that know some base/ggplot2 plotting may want more control o
 The `add_tabledap()` function allows you to add markers that encode variable(s) obtained via `tabledap()` to an existing `plotdap()` object. For example, suppose we have the following `sardines` data, and wish to understand the frequency of subsample counts:
 
 ```{r get_sardines, warning = FALSE, message = FALSE}
+my_url <- 'https://coastwatch.pfeg.noaa.gov/erddap/'
 sardines <- tabledap(
   'FRDCPSTrawlLHHaulCatch',
   fields = c('latitude',  'longitude', 'time', 'scientific_name', 
              'subsample_count'),
-  'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"'
-)
+  'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"',
+   url = my_url)
 head(sardines)
 ```
 
@@ -256,7 +257,7 @@ p1 <- add_tabledap(
   plotdap(crs = "+proj=robin", mapTitle = "Sardines - change color"), 
   sardines, 
   ~subsample_count, 
-  color = "density", 
+  color = "dense", 
 )
 p2  <- add_tabledap(
   plotdap(crs = "+proj=robin", mapTitle = "Sardines - change shape and size"), 
@@ -330,7 +331,7 @@ p1 <- add_griddap(
   plotdap(mapTitle = "Mean Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = mean
 ) 
 my_func <- function(x) var(x, na.rm = TRUE)
@@ -338,7 +339,7 @@ p2 <- add_griddap(
   plotdap(mapTitle = "Variance of Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = my_func
 ) 
 p1
@@ -351,7 +352,7 @@ p1 <- add_griddap(
   plotdap(mapTitle = "Mean Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = mean
 ) 
 my_func <- function(x) var(x, na.rm = TRUE)
@@ -359,7 +360,7 @@ p2 <- add_griddap(
   plotdap(mapTitle = "Variance of Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = my_func
 ) 
 p1
@@ -380,7 +381,7 @@ plotdap(mapTitle = "Grid over Land") %>%
       add_griddap(
         viirsSST, 
         ~sst, 
-        fill = "temperature"
+        fill = "thermal"
         )
 
 ```
@@ -394,7 +395,7 @@ plotdap(mapTitle = "Land Over Grid") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature"
+      fill = "thermal"
       ) %>%
     print(landmask = TRUE)
 ```
@@ -411,7 +412,7 @@ plotdap(mapTitle = "maxpixels = 10,000") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",
+      fill = "thermal",
       maxpixels = 10000 
       )
 ```
@@ -425,7 +426,7 @@ plotdap(mapTitle = "maxpixels = 50,000") %>%
      add_griddap(
        viirsSST, 
        ~sst, 
-       fill = "temperature", 
+       fill = "thermal", 
        maxpixels = 50000
        )
 ```
@@ -438,7 +439,7 @@ plotdap(mapTitle = "maxpixels = 100,000") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",  
+      fill = "thermal",  
       maxpixels = 100000
       )
 ```
@@ -453,7 +454,7 @@ plotdap(mapTitle = "maxpixels = 100,000, landmask") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",  
+      fill = "thermal",  
       maxpixels = 100000
       ) %>%
     print(landmask = TRUE)
@@ -481,7 +482,7 @@ plotdap(mapData = w) %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = 'temperature',  
+      fill = 'thermal',  
       maxpixels = 50000
       ) %>%
     print(landmask = TRUE)
@@ -522,7 +523,7 @@ plotdap(mapData = w) %>%
         add_griddap(
           soda70, 
           ~temp, 
-          fill = "temperature"
+          fill = "thermal"
           ) %>%
         print(landmask = TRUE) 
 
@@ -580,7 +581,7 @@ plotdap(mapTitle = "Reset colorscale limits") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature"
+      fill = "thermal"
       ) %>%
     add_ggplot(
        scale_fill_gradientn(colours = temp_color, na.value = NA, limits = c(10, 20)),
@@ -607,7 +608,7 @@ add_tabledap(
   plotdap(crs = "+proj=robin"), 
   sardines, 
   ~subsample_count, 
-  color = "density", 
+  color = "dense", 
   shape = 4, 
   animate = TRUE
 )
@@ -624,7 +625,7 @@ add_griddap(
   plotdap(crs = "+proj=robin"), 
   wind, ~y_wind, 
   time = identity, 
-  fill = 'velocity',
+  fill = 'delta',
   animate = TRUE
 )
 ```
@@ -638,10 +639,10 @@ p <- add_griddap(
   plotdap(crs = "+proj=robin"), 
   wind, ~y_wind, 
   time = identity, 
-  fill = 'velocity',
+  fill = 'delta',
   animate = TRUE
 )
-  ylim <- c(30, 50), 
+  ylim <- c(30, 50)
   xlim <- c(-150, -120)
   p <- bbox_set(p, xlim, ylim)
 ```

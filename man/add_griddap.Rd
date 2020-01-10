@@ -4,8 +4,17 @@
 \alias{add_griddap}
 \title{Add rerddap::griddap() data to a plotdap map}
 \usage{
-add_griddap(plot, grid, var, fill = "viridis", maxpixels = 10000,
-  time = mean, animate = FALSE, cumulative = FALSE, ...)
+add_griddap(
+  plot,
+  grid,
+  var,
+  fill = "viridis",
+  maxpixels = 10000,
+  time = mean,
+  animate = FALSE,
+  cumulative = FALSE,
+  ...
+)
 }
 \arguments{
 \item{plot}{a \link{plotdap} object.}
@@ -14,8 +23,9 @@ add_griddap(plot, grid, var, fill = "viridis", maxpixels = 10000,
 
 \item{var}{a formula defining a variable, or function of variables to visualize.}
 
-\item{fill}{either a character string of length 1 matching a name in \\link[rerddap]{colors}
-or a vector of color codes. This defines the colorscale used to encode values
+\item{fill}{either a character string of length 1 matching a name in the
+package \code{cmocean} or a vector of color codes.
+This defines the colorscale used to encode values
 of \code{var}.}
 
 \item{maxpixels}{integer > 0. Maximum number of cells to use for the plot.

@@ -5,8 +5,9 @@
 #' @param plot a \link{plotdap} object.
 #' @param grid a \link{griddap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
-#' @param fill either a character string of length 1 matching a name in \\link[rerddap]{colors}
-#' or a vector of color codes. This defines the colorscale used to encode values
+#' @param fill either a character string of length 1 matching a name in the
+#' package \code{cmocean} or a vector of color codes.
+#' This defines the colorscale used to encode values
 #' of \code{var}.
 #' @param maxpixels integer > 0. Maximum number of cells to use for the plot.
 #' If maxpixels < ncell(x), sampleRegular is used before plotting.
@@ -133,8 +134,15 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     )
     if (inherits(r, "RasterBrick")) {
       for (i in seq_len(raster::nlayers(r))) {
-        r[[i]] <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        #r[[i]] <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        junk <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        if (i == 1) {
+          temp <- junk
+        } else {
+          temp <- raster::addLayer(temp, junk)
+        }
       }
+      r <- raster::brick(temp)
     } else {
       r <- raster::resample(r, rnew, method = 'bilinear')
     }
@@ -152,7 +160,17 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   }
 
   # color scale
-  cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
+  # cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
+  if (length(fill) == 1) {
+     if (fill == 'viridis') {
+       cols <- viridis::viridis(256)
+     } else {
+       cols <- cmocean::cmocean(fill)(256)
+
+     }
+  }  else {
+     cols <- fill
+  }
 
   if (is_ggplotdap(plot)) {
     # TODO: not the most efficient approach, but it will have to do for now

@@ -5,7 +5,7 @@
 #' @param plot a \link{plotdap} object.
 #' @param table a \link{tabledap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
-#' @param color either a character string of length 1 matching a name in \link[rerddap]{colors}
+#' @param color either a character string of length 1 matching a name in \code{cmocean}
 #' or a vector of color codes. This defines the colorscale used to encode values
 #' of \code{var}.
 #' @param size the size of the symbol.
@@ -77,7 +77,17 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
   }
 
   # color scale
-  cols <- if (length(color) == 1) rerddap::colors[[color]] else color
+  # cols <- if (length(color) == 1) rerddap::colors[[color]] else color
+
+  if (length(color) == 1) {
+    if (color == 'viridis') {
+      cols = viridis::viridis(256)
+    } else{
+      cols <- cmocean::cmocean(color)(256)
+    }
+  }  else {
+    cols <- color
+  }
 
   if (is_ggplotdap(plot)) {
 

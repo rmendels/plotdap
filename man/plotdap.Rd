@@ -4,9 +4,16 @@
 \alias{plotdap}
 \title{Visualize rerddap data}
 \usage{
-plotdap(method = c("ggplot2", "base"), mapData = maps::map("world",
-  plot = FALSE, fill = TRUE), crs = NULL, datum = sf::st_crs(4326),
-  mapTitle = NULL, mapFill = "gray80", mapColor = "gray90", ...)
+plotdap(
+  method = c("ggplot2", "base"),
+  mapData = maps::map("world", plot = FALSE, fill = TRUE),
+  crs = NULL,
+  datum = sf::st_crs(4326),
+  mapTitle = NULL,
+  mapFill = "gray80",
+  mapColor = "gray90",
+  ...
+)
 }
 \arguments{
 \item{method}{the plotting method. Currently ggplot2 and base plotting

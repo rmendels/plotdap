@@ -4,8 +4,17 @@
 \alias{add_tabledap}
 \title{Add rerddap::tabledap data to a plotdap map}
 \usage{
-add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),
-  size = 1.5, shape = 19, animate = FALSE, cumulative = FALSE, ...)
+add_tabledap(
+  plot,
+  table,
+  var,
+  color = c("#132B43", "#56B1F7"),
+  size = 1.5,
+  shape = 19,
+  animate = FALSE,
+  cumulative = FALSE,
+  ...
+)
 }
 \arguments{
 \item{plot}{a \link{plotdap} object.}
@@ -14,7 +23,7 @@ add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),
 
 \item{var}{a formula defining a variable, or function of variables to visualize.}
 
-\item{color}{either a character string of length 1 matching a name in \link[rerddap]{colors}
+\item{color}{either a character string of length 1 matching a name in \code{cmocean}
 or a vector of color codes. This defines the colorscale used to encode values
 of \code{var}.}
 
