@@ -266,7 +266,8 @@ get_raster <- function(grid, var) {
     raster::values(b) <- lazyeval::f_eval(var, d)
     raster::setExtent(b, ext)
   } else {
-    d <- dplyr::arrange(grid$data, desc(lat), lon)
+    # d <- dplyr::arrange(grid$data, desc(lat), lon)
+    d <- dplyr::arrange(grid$data, desc(latitude), longitude)
     raster::raster(
       nrows = length(lats),
       ncols = length(lons),
