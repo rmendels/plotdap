@@ -1,6 +1,7 @@
 ## This is a minor bugfix update 
 
-fixed bug in using animation in add_griddap()
+* fixed problem when no time coordinate in dataset
+* 'add_tabledap()' overlays on gridded maps now work for 'ggplot2'
 
 ## Test environments
 * local OS X install, R 3.6.1

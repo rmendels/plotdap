@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 0.0.5
-Date: 2020-01-06
+Version: 0.0.6
+Date: 2020-02-17
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -15,6 +15,7 @@ Imports:
   cmocean,
   dplyr,
   gganimate,
+  ggnewscale (>= 0.4.1),
   ggplot2 (>= 3.1.0),
   lazyeval,
   lubridate,

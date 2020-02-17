@@ -99,15 +99,27 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
         gganimate::transition_manual(factor(time), cumulative = cumulative) +
         ggplot2::labs(title = "{current_frame}")
     }
-
-    return(
-      add_ggplot(
-        plot,
-        geom_sf(data = table, mapping = aes_(colour = var),
-                size = size, pch = shape, ...),
-        scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
+    if (length(plot$ggplot$layers) == 1) {
+      return(
+        add_ggplot(
+          plot,
+          geom_sf(data = table, mapping = aes_(colour = var),
+                  size = size, pch = shape, ...),
+          scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
+        )
       )
-    )
+    } else {
+      #plot$ggplot <- plot$ggplot + ggnewscale::new_scale_colour() + ggnewscale::new_scale_fill()
+      return(
+        add_ggplot(
+          plot,
+          ggnewscale::new_scale_colour(),
+          geom_sf(data = table, mapping = aes_(colour = var),
+                  size = size, pch = shape, ...),
+          scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
+          #scale_colour_gradientn(colours = cols)
+      )
+    }
   }
 
 

@@ -104,7 +104,7 @@ print.ggplotdap <- function(x, ...) {
   gg <- x$ggplot
   dots <- list(...)
   if (isTRUE(dots$landmask)) {
-    gg$layers <- rev(gg$layers)
+    gg$layers[1:2] <- rev(gg$layers[1:2])
     layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
     bbs <- lapply(layer_data[1], sf::st_bbox)
     x$ggplot <- gg
@@ -287,7 +287,7 @@ get_raster <- function(grid, var) {
 }
 
 
-utils::globalVariables(c("time", "desc", "lat", "lon"))
+utils::globalVariables(c("time", "desc", "lat", "lon", "latitude", "longitude"))
 
 latlon_is_valid <- function(x) {
   if (is_raster(x)) {

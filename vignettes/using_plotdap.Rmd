@@ -488,6 +488,8 @@ plotdap(mapData = w) %>%
     print(landmask = TRUE)
 ```
 
+![](viirsSST_100000_mask.png)
+
 
 The “Simple Ocean Data Assimilation (SODA)” model (see https://www.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
 
@@ -533,17 +535,19 @@ plotdap(mapData = w) %>%
 
 The `plotdap()` interface is designed so that you can plot both tables and grids at once (although I don't recommend trying to plot more than one `griddap()` or `tabledap()` object at once). It's also designed to work well with the `%>%` operator from the **magrittr** package so that code can be expressed in a left-to-right (rather than inside-out) fashion:
 
-```{r overlay, fig.align = 'center', fig.height = 4, fig.width = 5}
-plotdap("base") %>%
-  add_griddap(
+```{r overlay, echo = TRUE, eval = FALSE}
+p <-   add_griddap(plotdap(), 
     murSST_west, 
     ~analysed_sst
-    ) %>%
-  add_tabledap(
+    ) 
+p1 <-   add_tabledap(p,
     sardines, 
     ~subsample_count
     )
+print(p1, landmask = TRUE)
 ```
+
+![](overlay.png)
 
 ## Modifying `ggplotdap` objects
 
@@ -568,6 +572,7 @@ plotdap(crs = "+proj=robin") %>%
     theme(axis.ticks = element_blank(), axis.text = element_blank())
   )
 ```
+
 
 
 Similarly, VIIRS SST plot in the previous section,  detail is lost due to

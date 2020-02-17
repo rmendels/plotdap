@@ -177,7 +177,9 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     # https://twitter.com/hadleywickham/status/841763265344487424
     s <- sf::st_as_sf(raster::rasterToPolygons(r))
     vars <- setdiff(names(s), "geometry")
-    sg <- sf::st_as_sf(tidyr::gather_(s, "variable", "value", vars))
+    var_name <- lazyeval::f_text(var)
+    variable_name <- "variable"
+    sg <- sf::st_as_sf(tidyr::gather(s, {{variable_name}},{{var_name}}, vars))
     if (animate) {
       try_gganimate()
       plot$animate <- TRUE
@@ -191,10 +193,10 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       add_ggplot(
         plot,
         geom_sf(data = sg,
-                mapping = aes_string(fill = "value", colour = "value"), ...),
-        scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols),
-        scale_colour_gradientn(colors = cols),
-        guides(colour = FALSE)
+              mapping = ggplot2::aes_string(fill = var_name, colour = var_name), ...),
+        scale_fill_gradientn(name = var_name, colors = cols),
+        scale_colour_gradientn(colors = cols)
+        #ggplot2::guides(colour = "none")
       )
     )
   }

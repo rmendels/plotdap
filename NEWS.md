@@ -1,3 +1,7 @@
+# plotdap 0.0.6
+* fixed problem when no time coordinate in dataset
+* 'add_tabledap()' overlays on gridded maps now work for 'ggplot2'
+
 # plotdap 0.0.5
 * fixed problem with animation in 'add_griddap()'
 * fixed bad URL for sardine example
