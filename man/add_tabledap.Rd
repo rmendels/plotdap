@@ -57,7 +57,7 @@ a 'plotdap' map
 # code given to extract the data
 
 \donttest{
-sardines <- tabledap(
+sardines <- rerddap::tabledap(
  'FRDCPSTrawlLHHaulCatch',
  fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
   'time>=2010-01-01', 'time<=2012-01-01',

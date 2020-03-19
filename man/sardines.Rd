@@ -4,7 +4,9 @@
 \name{sardines}
 \alias{sardines}
 \title{sardine Data}
-\format{An object of class \code{tabledap} (inherits from \code{data.frame}) with 56 rows and 5 columns.}
+\format{
+An object of class \code{tabledap} (inherits from \code{data.frame}) with 56 rows and 5 columns.
+}
 \usage{
 sardines
 }

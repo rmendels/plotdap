@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 0.0.6
-Date: 2020-02-17
+Version: 0.0.7
+Date: 2020-03-19
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -36,7 +36,7 @@ Suggests:
   rgdal,
   rmarkdown,
   testthat
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr
