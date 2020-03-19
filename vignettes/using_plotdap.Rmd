@@ -26,7 +26,7 @@ library(rerddap)
 
 
 # plotdap
-The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://github.com/ropensci/rerddap) package. Maps can be made using either base or ggplot2 graphics, and the user does not need to know the intricacies of obtaining continental outlines, projections, and combining those with the data to form maps. Animations of the data are also readily obtained. `plotdap` works in a similar fashion with either tables or grids return by `rerddap` further simplifying the mapping process.
+The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://CRAN.R-project.org/package=rerddap) package. Maps can be made using either base or ggplot2 graphics, and the user does not need to know the intricacies of obtaining continental outlines, projections, and combining those with the data to form maps. Animations of the data are also readily obtained. `plotdap` works in a similar fashion with either tables or grids return by `rerddap` further simplifying the mapping process.
 
 A user who desires fine control of their maps should learn how to map the data themselves  - some examples are give in the `rerddap` vignette.  But `plotdap` provides a simplified workflow of obtaining data using `rerddap` and quickly and simply mapping the data.  In what follows we go over how to install  `plotdap` and it's basic usage,  as well as how to utilize some of the more important options in the package in order to improve the map.
 
@@ -51,7 +51,7 @@ devtools::install_github('ropensci/plotdap')
 
 ## Getting started with `plotdap()`
 
-The `plotdap()` function makes it easy to visualize data acquired via `rerddap::tabledap()` or `rerddap::griddap()`. Regardless of the data you want to visualize, you'll always want to start a plot via `plotdap()`, where you may specify some "global" plotting options. Subsequent sections will demonstrate how to add tables/grids via `add_tabledap()`/`add_griddap()`, but for now we'll focus on options provided by `plotdap()`. Most importantly, the first argument decides whether [base](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/plot.html) or [ggplot2](https://cran.r-project.org/package=ggplot2) graphics should be used for the actual plotting.
+The `plotdap()` function makes it easy to visualize data acquired via `rerddap::tabledap()` or `rerddap::griddap()`. Regardless of the data you want to visualize, you'll always want to start a plot via `plotdap()`, where you may specify some "global" plotting options. Subsequent sections will demonstrate how to add tables/grids via `add_tabledap()`/`add_griddap()`, but for now we'll focus on options provided by `plotdap()`. Most importantly, the first argument decides whether base 'R' graphics or [ggplot2](https://cran.r-project.org/package=ggplot2) graphics should be used for the actual plotting.
 
 
 ```{r world, fig.align = 'center', fig.height = 4, fig.width = 5}

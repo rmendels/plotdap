@@ -1,6 +1,8 @@
 # plotdap 0.0.7
 
-fixed problem with \dontrun example not finding rerddap::griddap()
+* fixed problem with \dontrun example not finding rerddap::griddap()
+
+* fixed problem in vignette to URL link to R docs
 
 # plotdap 0.0.6
 * fixed problem when no time coordinate in dataset

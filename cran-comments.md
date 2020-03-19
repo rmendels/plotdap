@@ -2,6 +2,9 @@
 
 * fixed  problem reported by Prof. Ripley of \donttest example not working
 
+* fixed problem in vignette to URL link to R docs
+
+
 ## Test environments
 * local OS X install, R 3.6.1
 * Fedora Linux on RHub)
