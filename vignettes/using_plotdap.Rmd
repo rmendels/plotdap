@@ -64,14 +64,14 @@ plotdap("base")
 In addition to choosing a plotting method, `plotdap()` is where you can define
 properties of the background map, including the target projection using a valid
 coordinate reference system (CRS) definition. Projection is performed using the
-[PROJ.4 library](http://proj4.org/), and
-[spatialreference.org](http://www.spatialreference.org) is a great resource for
+[PROJ.4 library](https://proj4.org/), and
+[spatialreference.org](https://www.spatialreference.org) is a great resource for
 finding PROJ.4 CRS descriptions. Using the search utility, you can for example,
 [search for "South
-Pole"](http://spatialreference.org/ref/sr-org/?search=South+Pole&srtext=Search)
+Pole"](https://spatialreference.org/ref/sr-org/?search=South+Pole&srtext=Search)
 and pick from a number of options. Here I've chosen the [MODIS South Pole
-Stereographic](http://spatialreference.org/ref/sr-org/8375/) option and
-copy-pasted the [Proj4 page](http://spatialreference.org/ref/sr-org/8375/proj4/)
+Stereographic](https://spatialreference.org/ref/sr-org/8375/) option and
+copy-pasted the [Proj4 page](https://spatialreference.org/ref/sr-org/8375/proj4/)
 with the CRS definition:
 
 
@@ -88,7 +88,7 @@ plotdap("base",
 You might notice that some projections aren't "well-defined" on a global scale,
 and thus, may result in an error, or a "broken" looking map. For instance, [this
 Albers projection centered on
-Alaska](http://spatialreference.org/ref/epsg/3467/):
+Alaska](https://spatialreference.org/ref/epsg/3467/):
 
 
 ```{r alaska, fig.align = 'center', fig.height = 4, fig.width = 5}
@@ -134,7 +134,7 @@ processing because fewer unused polygons need to be clipped.  This is
 particularly important for maps that will cross the dateline. So for example to use
 the hi-res outlines for VIIIRS SST off the coast of North America:
 
-```{r get_viirsSST, }
+```{r get_viirsSST }
 sstInfo <- rerddap::info('erdVHsstaWS3day')
 # get latest 3-day composite sst
 viirsSST <- rerddap::griddap(sstInfo, 
@@ -491,7 +491,7 @@ plotdap(mapData = w) %>%
 ![](viirsSST_100000_mask.png)
 
 
-The “Simple Ocean Data Assimilation (SODA)” model (see https://www.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
+The “Simple Ocean Data Assimilation (SODA)” model (see https://www2.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
 
 First, get the SODA data:
 

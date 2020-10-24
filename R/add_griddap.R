@@ -36,7 +36,7 @@
 #'
 #'\donttest{
 #'  murSST <- rerddap::griddap(
-#'    'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
+#'    'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -120.5),
 #'    time = c('last', 'last'), fields = 'analysed_sst'
 #'   )
 #'
@@ -183,7 +183,7 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     if (animate) {
       try_gganimate()
       plot$animate <- TRUE
-      plot$nper <- length(sg)
+      plot$nper <- length(s) - 1
       plot$ggplot <- plot$ggplot +
         gganimate::transition_manual(variable, cumulative = cumulative) +
         ggplot2::labs(title = "{current_frame}")

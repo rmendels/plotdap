@@ -1,3 +1,8 @@
+# plotdap 0.0.8
+
+fixed animation bug in 'add_griddap()' not finding the correct number
+of frames
+
 # plotdap 0.0.7
 
 * fixed problem with \dontrun example not finding rerddap::griddap()

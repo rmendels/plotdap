@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 0.0.7
-Date: 2020-03-19
+Version: 0.0.8
+Date: 2020-10-23
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 URL: https://github.com/ropensci/plotdap
 BugReports: https://github.com/ropensci/plotdap/issues
 Depends: 
-   R (>= 3.6.0)
+   R (>= 4.0.0)
 Imports:
   cmocean,
   dplyr,
@@ -36,7 +36,7 @@ Suggests:
   rgdal,
   rmarkdown,
   testthat
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr

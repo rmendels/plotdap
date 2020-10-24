@@ -33,7 +33,7 @@
 #'  'FRDCPSTrawlLHHaulCatch',
 #'  fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
 #'   'time>=2010-01-01', 'time<=2012-01-01',
-#'   scientific_name="Sardinops sagax"
+#'   'scientific_name="Sardinops sagax"'
 #'   )
 #'}
 #'
