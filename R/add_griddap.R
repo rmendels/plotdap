@@ -5,8 +5,9 @@
 #' @param plot a \link{plotdap} object.
 #' @param grid a \link{griddap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
-#' @param fill either a character string of length 1 matching a name in \\link[rerddap]{colors}
-#' or a vector of color codes. This defines the colorscale used to encode values
+#' @param fill either a character string of length 1 matching a name in the
+#' package \code{cmocean} or a vector of color codes.
+#' This defines the colorscale used to encode values
 #' of \code{var}.
 #' @param maxpixels integer > 0. Maximum number of cells to use for the plot.
 #' If maxpixels < ncell(x), sampleRegular is used before plotting.
@@ -34,12 +35,12 @@
 #' # actual datasets in data folder to meet execution timings
 #'
 #'\donttest{
-#'  murSST <- griddap(
-#'    'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -1205),
+#'  murSST <- rerddap::griddap(
+#'    'jplMURSST41', latitude = c(35, 40), longitude = c(-125, -120.5),
 #'    time = c('last', 'last'), fields = 'analysed_sst'
 #'   )
 #'
-#'  QMwind <- griddap(
+#'  QMwind <- rerddap::griddap(
 #'    'erdQMwindmday', time = c('2016-11-16', '2017-01-16'),
 #'    latitude = c(30, 50), longitude = c(210, 240),
 #'    fields = 'x_wind'
@@ -133,8 +134,15 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     )
     if (inherits(r, "RasterBrick")) {
       for (i in seq_len(raster::nlayers(r))) {
-        r[[i]] <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        #r[[i]] <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        junk <- raster::resample(r[[i]], rnew, method = 'bilinear')
+        if (i == 1) {
+          temp <- junk
+        } else {
+          temp <- raster::addLayer(temp, junk)
+        }
       }
+      r <- raster::brick(temp)
     } else {
       r <- raster::resample(r, rnew, method = 'bilinear')
     }
@@ -152,18 +160,30 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   }
 
   # color scale
-  cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
+  # cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
+  if (length(fill) == 1) {
+     if (fill == 'viridis') {
+       cols <- viridis::viridis(256)
+     } else {
+       cols <- cmocean::cmocean(fill)(256)
+
+     }
+  }  else {
+     cols <- fill
+  }
 
   if (is_ggplotdap(plot)) {
     # TODO: not the most efficient approach, but it will have to do for now
     # https://twitter.com/hadleywickham/status/841763265344487424
     s <- sf::st_as_sf(raster::rasterToPolygons(r))
     vars <- setdiff(names(s), "geometry")
-    sg <- sf::st_as_sf(tidyr::gather_(s, "variable", "value", vars))
+    var_name <- lazyeval::f_text(var)
+    variable_name <- "variable"
+    sg <- sf::st_as_sf(tidyr::gather(s, {{variable_name}},{{var_name}}, vars))
     if (animate) {
       try_gganimate()
       plot$animate <- TRUE
-      plot$nper <- length(sg)
+      plot$nper <- length(s) - 1
       plot$ggplot <- plot$ggplot +
         gganimate::transition_manual(variable, cumulative = cumulative) +
         ggplot2::labs(title = "{current_frame}")
@@ -173,10 +193,10 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       add_ggplot(
         plot,
         geom_sf(data = sg,
-                mapping = aes_string(fill = "value", colour = "value"), ...),
-        scale_fill_gradientn(name = lazyeval::f_text(var), colors = cols),
-        scale_colour_gradientn(colors = cols),
-        guides(colour = FALSE)
+              mapping = ggplot2::aes_string(fill = var_name, colour = var_name), ...),
+        scale_fill_gradientn(name = var_name, colors = cols),
+        scale_colour_gradientn(colors = cols)
+        #ggplot2::guides(colour = "none")
       )
     )
   }

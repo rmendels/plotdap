@@ -1,33 +1,32 @@
-## This is a minor update 
+## This is a minor bugfix update 
 
-- fixed URL change in vignette
-- fixed Import and Namespace problems reported on CRAN checks
-- On Windows,  previous version built with --no-vignettes please continue that
-if Vignette build takes too long
 
 
 ## Test environments
-* local OS X install, R 3.6.1
-* Fedora Linux on RHub)
+* local OS X install, R 4.0.3
+* local Fedora, R 4.0.2 
 * win-builder (devel and release)
 
 ## R CMD check results
 
 ### OS X
 
-Duration: 3m 53s
+Duration: 4m 23.5s
 
-0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 ### Winbuilder release
+
 OK
 
 ### Winbuilder devel
 
 OK
 
-### RHUb Windows Server 2008 R2 SP1, R-devel, 32/64 bit
 
-OK
-### RHub Fedora
-OK
+### Local Fedora
+
+Duration: 3m 08s
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+

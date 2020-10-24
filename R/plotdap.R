@@ -104,7 +104,7 @@ print.ggplotdap <- function(x, ...) {
   gg <- x$ggplot
   dots <- list(...)
   if (isTRUE(dots$landmask)) {
-    gg$layers <- rev(gg$layers)
+    gg$layers[1:2] <- rev(gg$layers[1:2])
     layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
     bbs <- lapply(layer_data[1], sf::st_bbox)
     x$ggplot <- gg
@@ -257,7 +257,11 @@ get_raster <- function(grid, var) {
   r <- if (length(times) > 1) {
     # ensure values appear in the right order...
     # TODO: how to detect a south -> north ordering?
-    d <- dplyr::arrange(grid$data, time, desc(lat), lon)
+    if ("lat" %in% names(grid$data)) {
+      d <- dplyr::arrange(grid$data, time, desc(lat), lon)
+    } else {
+      d <- dplyr::arrange(grid$data, time, desc(latitude), longitude)
+    }
     b <- raster::brick(
       nl = length(times),
       nrows = length(lats),
@@ -266,7 +270,11 @@ get_raster <- function(grid, var) {
     raster::values(b) <- lazyeval::f_eval(var, d)
     raster::setExtent(b, ext)
   } else {
-    d <- dplyr::arrange(grid$data, desc(lat), lon)
+    if ("lat" %in% names(grid$data)) {
+      d <- dplyr::arrange(grid$data, desc(lat), lon)
+    } else {
+      d <- dplyr::arrange(grid$data, desc(latitude), longitude)
+    }
     raster::raster(
       nrows = length(lats),
       ncols = length(lons),
@@ -279,7 +287,7 @@ get_raster <- function(grid, var) {
 }
 
 
-utils::globalVariables(c("time", "desc", "lat", "lon"))
+utils::globalVariables(c("time", "desc", "lat", "lon", "latitude", "longitude"))
 
 latlon_is_valid <- function(x) {
   if (is_raster(x)) {

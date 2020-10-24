@@ -4,7 +4,9 @@
 \name{murSST}
 \alias{murSST}
 \title{murSST Data}
-\format{An object of class \code{griddap_nc} (inherits from \code{nc}, \code{data.frame}) with 0 rows and 2 columns.}
+\format{
+An object of class \code{griddap_nc} (inherits from \code{nc}, \code{data.frame}) with 0 rows and 2 columns.
+}
 \usage{
 murSST
 }

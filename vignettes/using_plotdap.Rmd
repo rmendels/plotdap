@@ -26,7 +26,7 @@ library(rerddap)
 
 
 # plotdap
-The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://github.com/ropensci/rerddap) package. Maps can be made using either base or ggplot2 graphics, and the user does not need to know the intricacies of obtaining continental outlines, projections, and combining those with the data to form maps. Animations of the data are also readily obtained. `plotdap` works in a similar fashion with either tables or grids return by `rerddap` further simplifying the mapping process.
+The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://CRAN.R-project.org/package=rerddap) package. Maps can be made using either base or ggplot2 graphics, and the user does not need to know the intricacies of obtaining continental outlines, projections, and combining those with the data to form maps. Animations of the data are also readily obtained. `plotdap` works in a similar fashion with either tables or grids return by `rerddap` further simplifying the mapping process.
 
 A user who desires fine control of their maps should learn how to map the data themselves  - some examples are give in the `rerddap` vignette.  But `plotdap` provides a simplified workflow of obtaining data using `rerddap` and quickly and simply mapping the data.  In what follows we go over how to install  `plotdap` and it's basic usage,  as well as how to utilize some of the more important options in the package in order to improve the map.
 
@@ -51,7 +51,7 @@ devtools::install_github('ropensci/plotdap')
 
 ## Getting started with `plotdap()`
 
-The `plotdap()` function makes it easy to visualize data acquired via `rerddap::tabledap()` or `rerddap::griddap()`. Regardless of the data you want to visualize, you'll always want to start a plot via `plotdap()`, where you may specify some "global" plotting options. Subsequent sections will demonstrate how to add tables/grids via `add_tabledap()`/`add_griddap()`, but for now we'll focus on options provided by `plotdap()`. Most importantly, the first argument decides whether [base](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/plot.html) or [ggplot2](https://cran.r-project.org/package=ggplot2) graphics should be used for the actual plotting.
+The `plotdap()` function makes it easy to visualize data acquired via `rerddap::tabledap()` or `rerddap::griddap()`. Regardless of the data you want to visualize, you'll always want to start a plot via `plotdap()`, where you may specify some "global" plotting options. Subsequent sections will demonstrate how to add tables/grids via `add_tabledap()`/`add_griddap()`, but for now we'll focus on options provided by `plotdap()`. Most importantly, the first argument decides whether base 'R' graphics or [ggplot2](https://cran.r-project.org/package=ggplot2) graphics should be used for the actual plotting.
 
 
 ```{r world, fig.align = 'center', fig.height = 4, fig.width = 5}
@@ -64,14 +64,14 @@ plotdap("base")
 In addition to choosing a plotting method, `plotdap()` is where you can define
 properties of the background map, including the target projection using a valid
 coordinate reference system (CRS) definition. Projection is performed using the
-[PROJ.4 library](http://proj4.org/), and
-[spatialreference.org](http://www.spatialreference.org) is a great resource for
+[PROJ.4 library](https://proj4.org/), and
+[spatialreference.org](https://www.spatialreference.org) is a great resource for
 finding PROJ.4 CRS descriptions. Using the search utility, you can for example,
 [search for "South
-Pole"](http://spatialreference.org/ref/sr-org/?search=South+Pole&srtext=Search)
+Pole"](https://spatialreference.org/ref/sr-org/?search=South+Pole&srtext=Search)
 and pick from a number of options. Here I've chosen the [MODIS South Pole
-Stereographic](http://spatialreference.org/ref/sr-org/8375/) option and
-copy-pasted the [Proj4 page](http://spatialreference.org/ref/sr-org/8375/proj4/)
+Stereographic](https://spatialreference.org/ref/sr-org/8375/) option and
+copy-pasted the [Proj4 page](https://spatialreference.org/ref/sr-org/8375/proj4/)
 with the CRS definition:
 
 
@@ -88,7 +88,7 @@ plotdap("base",
 You might notice that some projections aren't "well-defined" on a global scale,
 and thus, may result in an error, or a "broken" looking map. For instance, [this
 Albers projection centered on
-Alaska](http://spatialreference.org/ref/epsg/3467/):
+Alaska](https://spatialreference.org/ref/epsg/3467/):
 
 
 ```{r alaska, fig.align = 'center', fig.height = 4, fig.width = 5}
@@ -134,7 +134,7 @@ processing because fewer unused polygons need to be clipped.  This is
 particularly important for maps that will cross the dateline. So for example to use
 the hi-res outlines for VIIIRS SST off the coast of North America:
 
-```{r get_viirsSST, }
+```{r get_viirsSST }
 sstInfo <- rerddap::info('erdVHsstaWS3day')
 # get latest 3-day composite sst
 viirsSST <- rerddap::griddap(sstInfo, 
@@ -149,7 +149,7 @@ viirsSST <- rerddap::griddap(sstInfo,
 w <- map("worldHires", xlim = c(-140., -114), ylim = c(30., 42.), 
          fill = TRUE, plot = FALSE)
 # map using that outline,  temperature color from cmocean
-add_griddap(plotdap(mapData = w), viirsSST, ~sst, fill = "temperature" )
+add_griddap(plotdap(mapData = w), viirsSST, ~sst, fill = "thermal" )
 
 ```
 
@@ -213,12 +213,13 @@ More advanced users that know some base/ggplot2 plotting may want more control o
 The `add_tabledap()` function allows you to add markers that encode variable(s) obtained via `tabledap()` to an existing `plotdap()` object. For example, suppose we have the following `sardines` data, and wish to understand the frequency of subsample counts:
 
 ```{r get_sardines, warning = FALSE, message = FALSE}
+my_url <- 'https://coastwatch.pfeg.noaa.gov/erddap/'
 sardines <- tabledap(
   'FRDCPSTrawlLHHaulCatch',
   fields = c('latitude',  'longitude', 'time', 'scientific_name', 
              'subsample_count'),
-  'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"'
-)
+  'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"',
+   url = my_url)
 head(sardines)
 ```
 
@@ -256,7 +257,7 @@ p1 <- add_tabledap(
   plotdap(crs = "+proj=robin", mapTitle = "Sardines - change color"), 
   sardines, 
   ~subsample_count, 
-  color = "density", 
+  color = "dense", 
 )
 p2  <- add_tabledap(
   plotdap(crs = "+proj=robin", mapTitle = "Sardines - change shape and size"), 
@@ -330,7 +331,7 @@ p1 <- add_griddap(
   plotdap(mapTitle = "Mean Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = mean
 ) 
 my_func <- function(x) var(x, na.rm = TRUE)
@@ -338,7 +339,7 @@ p2 <- add_griddap(
   plotdap(mapTitle = "Variance of Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = my_func
 ) 
 p1
@@ -351,7 +352,7 @@ p1 <- add_griddap(
   plotdap(mapTitle = "Mean Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = mean
 ) 
 my_func <- function(x) var(x, na.rm = TRUE)
@@ -359,7 +360,7 @@ p2 <- add_griddap(
   plotdap(mapTitle = "Variance of Meridional Wind"), 
   wind, 
   ~y_wind, 
-  fill = "velocity", 
+  fill = "delta", 
   time = my_func
 ) 
 p1
@@ -380,7 +381,7 @@ plotdap(mapTitle = "Grid over Land") %>%
       add_griddap(
         viirsSST, 
         ~sst, 
-        fill = "temperature"
+        fill = "thermal"
         )
 
 ```
@@ -394,7 +395,7 @@ plotdap(mapTitle = "Land Over Grid") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature"
+      fill = "thermal"
       ) %>%
     print(landmask = TRUE)
 ```
@@ -411,7 +412,7 @@ plotdap(mapTitle = "maxpixels = 10,000") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",
+      fill = "thermal",
       maxpixels = 10000 
       )
 ```
@@ -425,7 +426,7 @@ plotdap(mapTitle = "maxpixels = 50,000") %>%
      add_griddap(
        viirsSST, 
        ~sst, 
-       fill = "temperature", 
+       fill = "thermal", 
        maxpixels = 50000
        )
 ```
@@ -438,7 +439,7 @@ plotdap(mapTitle = "maxpixels = 100,000") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",  
+      fill = "thermal",  
       maxpixels = 100000
       )
 ```
@@ -453,7 +454,7 @@ plotdap(mapTitle = "maxpixels = 100,000, landmask") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature",  
+      fill = "thermal",  
       maxpixels = 100000
       ) %>%
     print(landmask = TRUE)
@@ -481,14 +482,16 @@ plotdap(mapData = w) %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = 'temperature',  
+      fill = 'thermal',  
       maxpixels = 50000
       ) %>%
     print(landmask = TRUE)
 ```
 
+![](viirsSST_100000_mask.png)
 
-The “Simple Ocean Data Assimilation (SODA)” model (see https://www.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
+
+The “Simple Ocean Data Assimilation (SODA)” model (see https://www2.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
 
 First, get the SODA data:
 
@@ -522,7 +525,7 @@ plotdap(mapData = w) %>%
         add_griddap(
           soda70, 
           ~temp, 
-          fill = "temperature"
+          fill = "thermal"
           ) %>%
         print(landmask = TRUE) 
 
@@ -532,17 +535,19 @@ plotdap(mapData = w) %>%
 
 The `plotdap()` interface is designed so that you can plot both tables and grids at once (although I don't recommend trying to plot more than one `griddap()` or `tabledap()` object at once). It's also designed to work well with the `%>%` operator from the **magrittr** package so that code can be expressed in a left-to-right (rather than inside-out) fashion:
 
-```{r overlay, fig.align = 'center', fig.height = 4, fig.width = 5}
-plotdap("base") %>%
-  add_griddap(
+```{r overlay, echo = TRUE, eval = FALSE}
+p <-   add_griddap(plotdap(), 
     murSST_west, 
     ~analysed_sst
-    ) %>%
-  add_tabledap(
+    ) 
+p1 <-   add_tabledap(p,
     sardines, 
     ~subsample_count
     )
+print(p1, landmask = TRUE)
 ```
+
+![](overlay.png)
 
 ## Modifying `ggplotdap` objects
 
@@ -569,6 +574,7 @@ plotdap(crs = "+proj=robin") %>%
 ```
 
 
+
 Similarly, VIIRS SST plot in the previous section,  detail is lost due to
 high values observed in landlocked water.  To modify that plot:
 
@@ -580,7 +586,7 @@ plotdap(mapTitle = "Reset colorscale limits") %>%
     add_griddap(
       viirsSST, 
       ~sst, 
-      fill = "temperature"
+      fill = "thermal"
       ) %>%
     add_ggplot(
        scale_fill_gradientn(colours = temp_color, na.value = NA, limits = c(10, 20)),
@@ -607,7 +613,7 @@ add_tabledap(
   plotdap(crs = "+proj=robin"), 
   sardines, 
   ~subsample_count, 
-  color = "density", 
+  color = "dense", 
   shape = 4, 
   animate = TRUE
 )
@@ -624,7 +630,7 @@ add_griddap(
   plotdap(crs = "+proj=robin"), 
   wind, ~y_wind, 
   time = identity, 
-  fill = 'velocity',
+  fill = 'delta',
   animate = TRUE
 )
 ```
@@ -638,10 +644,10 @@ p <- add_griddap(
   plotdap(crs = "+proj=robin"), 
   wind, ~y_wind, 
   time = identity, 
-  fill = 'velocity',
+  fill = 'delta',
   animate = TRUE
 )
-  ylim <- c(30, 50), 
+  ylim <- c(30, 50)
   xlim <- c(-150, -120)
   p <- bbox_set(p, xlim, ylim)
 ```

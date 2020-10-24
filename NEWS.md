@@ -1,3 +1,23 @@
+# plotdap 0.0.8
+
+fixed animation bug in 'add_griddap()' not finding the correct number
+of frames
+
+# plotdap 0.0.7
+
+* fixed problem with \dontrun example not finding rerddap::griddap()
+
+* fixed problem in vignette to URL link to R docs
+
+# plotdap 0.0.6
+* fixed problem when no time coordinate in dataset
+* 'add_tabledap()' overlays on gridded maps now work for 'ggplot2'
+
+# plotdap 0.0.5
+* fixed problem with animation in 'add_griddap()'
+* fixed bad URL for sardine example
+* changed to use colors in package 'cmocean' instead of in 'rerddap'
+
 # plotdap 0.0.4
 * fixed changed SODA datasetid in vignette
 * fixed Namespace and Import problems
