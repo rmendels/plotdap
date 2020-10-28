@@ -134,7 +134,7 @@ processing because fewer unused polygons need to be clipped.  This is
 particularly important for maps that will cross the dateline. So for example to use
 the hi-res outlines for VIIIRS SST off the coast of North America:
 
-```{r get_viirsSST }
+```{r get_viirsSST, eval = FALSE }
 sstInfo <- rerddap::info('erdVHsstaWS3day')
 # get latest 3-day composite sst
 viirsSST <- rerddap::griddap(sstInfo, 
@@ -212,7 +212,7 @@ More advanced users that know some base/ggplot2 plotting may want more control o
 
 The `add_tabledap()` function allows you to add markers that encode variable(s) obtained via `tabledap()` to an existing `plotdap()` object. For example, suppose we have the following `sardines` data, and wish to understand the frequency of subsample counts:
 
-```{r get_sardines, warning = FALSE, message = FALSE}
+```{r get_sardines, echo = TRUE, eval = FALSE}
 my_url <- 'https://coastwatch.pfeg.noaa.gov/erddap/'
 sardines <- tabledap(
   'FRDCPSTrawlLHHaulCatch',
@@ -220,7 +220,6 @@ sardines <- tabledap(
              'subsample_count'),
   'time>=2010-01-01', 'time<=2012-01-01', 'scientific_name="Sardinops sagax"',
    url = my_url)
-head(sardines)
 ```
 
 At the very least, `add_tabledap()` needs a base map (i.e., a `plotdap()` object), the `tabledap()` data, and a *formula* defining the variable of interest (for encoding the color of the markers). In R, you can create a formula by prefixing `~` to some expression. This formula can simply reference a variable already residing in the dataset (e.g., `~subsample_count`) or it can be a function of some variables (e.g. `~log2(subsample_count)`):
@@ -280,7 +279,7 @@ For further details about these arguments, please refer to the documentation on 
 
 Similar to `add_tabledap()`, the `add_griddap()` function makes it easy to add rasters (i.e., rectangular tiles) to a `plotdap()` object. To demonstrate, lets obtain some of the latest sea surface temperatures along the western coast of the US.
 
-```{r get_mur}
+```{r get_mur, eval = FALSE}
 murSST_west <- griddap(
   'jplMURSST41', 
   latitude = c(22, 51), 
@@ -290,9 +289,6 @@ murSST_west <- griddap(
   )
 ```
 
-```{r}
-str(murSST_west$data)
-```
 
 
 Again, similar to `add_tabledap()`, `add_griddap()` needs a base map (i.e., a `plotdap()` object), the `griddap()` data, and a *formula* defining the variable of interest (for encoding the fill of the rectangles). The `add_griddap()` function also has a `maxpixels` argument which sets a maximum threshold for the number of cells (i.e., pixels) to use before projection and plotting occurs. Compared to ggplot2, base plotting is much more efficient at rendering raster objects, so it might be worth increasing the threshold in that case:
@@ -312,7 +308,7 @@ add_griddap(
 
 The `murSST_west` grid has a single time point (i.e., `length(unique(murSST_west$data$time)) == 1`), but what do we do when there are multiple time points? In addition to animating multiple grids (a la `add_tabledap()`), you also have the option to summarize multiple grids into a single grid. To demonstrate, lets grab some wind speeds measured along the west coast of the US.
 
-```{r get_wind}
+```{r get_wind, eval = FALSE}
 wind <- griddap(
   'erdQMwindmday', 
   time = c('2016-04-16', '2016-06-16'),
@@ -320,7 +316,6 @@ wind <- griddap(
   longitude = c(210, 240),
   fields = 'y_wind'
 )
-unique(wind$data$time)
 ```
 
 When faced with multiple time periods, and `animate = FALSE` (the default), the `time` argument is used to reduce multiple grids (i.e., raster bricks) to a single grid (i.e., a single raster layer). You can pass any R function to the `time` argument, but when `animate = FALSE`, you should take care to ensure the function returns a single value. The default uses the `mean(na.rm = TRUE)` function so that each cell represents the average (in this case amongst three time points), but we could easily set this to `var()` to get the variance for each cell:
@@ -346,27 +341,7 @@ p1
 p2
 
 ```
-
-```{r plot_wind, echo = FALSE, fig.hold = TRUE, out.width='.49\\linewidth', fig.width=3.25, fig.height=4 , message = FALSE, warning = FALSE}
-p1 <- add_griddap(
-  plotdap(mapTitle = "Mean Meridional Wind"), 
-  wind, 
-  ~y_wind, 
-  fill = "delta", 
-  time = mean
-) 
-my_func <- function(x) var(x, na.rm = TRUE)
-p2 <- add_griddap(
-  plotdap(mapTitle = "Variance of Meridional Wind"), 
-  wind, 
-  ~y_wind, 
-  fill = "delta", 
-  time = my_func
-) 
-p1
-p2
-
-```
+![](winds.png)
 
 ### Changing the layer order
 
@@ -477,7 +452,7 @@ w <- map("worldHires", xlim = c(-130., -114), ylim = c(30., 42.),
 
 and then plotted, with the landmask option:
 
-```{r viirs_hires_mask, fig.align = 'center', fig.height = 4, fig.width = 5,  message = FALSE, warning = FALSE}
+```{r viirs_hires_mask, echo = TRUE, eval = FALSE}
 plotdap(mapData = w) %>%
     add_griddap(
       viirsSST, 
@@ -495,7 +470,7 @@ The “Simple Ocean Data Assimilation (SODA)” model (see https://www2.atmos.um
 
 First, get the SODA data:
 
-```{r soda70_get, message = FALSE, warning = FALSE}
+```{r soda70_get, echo = TRUE, eval = FALSE}
 soda70Info <- rerddap::info('erdSoda331oceanmday')
 xpos <- c(135.25, 240.25)
 ypos <- c(20.25, 60.25)
@@ -512,7 +487,7 @@ soda70 <- rerddap::griddap(soda70Info,
 
 then plot with `plotdap`
 
-```{r soda70, fig.align = 'center', fig.height = 3, fig.width = 5,  message = FALSE, warning = FALSE}
+```{r soda70, echo= TRUE, eval = FALSE}
 remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", 
             "Burkina Faso", "Ghana", "Togo")
 #subset world2Hires with those countries removed
@@ -530,6 +505,7 @@ plotdap(mapData = w) %>%
         print(landmask = TRUE) 
 
 ```
+![](soda70.png)
 
 ## Combining tables/grids
 
