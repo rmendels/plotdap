@@ -1,5 +1,7 @@
-## This is a minor bugfix update 
+## Vignette changed so that rebuild of vignette will not fail
 
+Quick Re-submission in response to notice from CRAN to fix
+error in vignette rebuild
 
 
 ## Test environments

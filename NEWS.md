@@ -1,3 +1,7 @@
+# plotdap 0.0.9
+
+Vignette changed so it will not fail on CRAN
+
 # plotdap 0.0.8
 
 fixed animation bug in 'add_griddap()' not finding the correct number
