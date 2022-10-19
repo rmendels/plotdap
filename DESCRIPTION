@@ -1,29 +1,28 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 0.0.9
-Date: 2020-10-28
+Version: 1.0.0
+Date: 2022-10-17
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
 Description: Easily visualize and animate 'tabledap' and 'griddap' objects obtained via the 'rerddap' package in a simple one-line command,  using either base graphics or 'ggplot2' graphics. 'plotdap' handles extracting and reshaping the data,  map projections and continental outlines.  Optionally the data can be animated through time using the 'gganmiate' package.
 License: MIT + file LICENSE
-URL: https://github.com/ropensci/plotdap
-BugReports: https://github.com/ropensci/plotdap/issues
+URL: https://github.com/rmendels/plotdap
+BugReports: https://github.com/rmendels/plotdap/issues
 Depends: 
    R (>= 4.0.0)
 Imports:
   cmocean,
   dplyr,
   gganimate,
-  ggnewscale (>= 0.4.1),
+  ggnewscale,
   ggplot2 (>= 3.1.0),
   lazyeval,
   lubridate,
   magrittr,
   maps,
   raster,
-  rerddap (>= 0.6.0),
-  rgeos,
+  rerddap (>= 0.8.0),
   scales,
   sf,
   tidyr,
@@ -36,7 +35,7 @@ Suggests:
   rgdal,
   rmarkdown,
   testthat
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr

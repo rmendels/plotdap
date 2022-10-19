@@ -1,12 +1,15 @@
-## Vignette changed so that rebuild of vignette will not fail
+## Various minor fixes
 
-Quick Re-submission in response to notice from CRAN to fix
-error in vignette rebuild
+Removed dependency on rgeos, rgdal
+Fixed broken URLs in DESCRIPTION, vignette
+
+
 
 
 ## Test environments
-* local OS X install, R 4.0.3
-* local Fedora, R 4.0.2 
+* local OS X install, R 4.2.1
+* rhub
+* macOS-builder
 * win-builder (devel and release)
 
 ## R CMD check results

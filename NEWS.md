@@ -1,3 +1,8 @@
+# plotdap 1.0.0
+
+ Removed direct dependency on rgeos, rgdal
+ Fixed Broken URLs in DESCRIPTION, vignette
+
 # plotdap 0.0.9
 
 Vignette changed so it will not fail on CRAN

@@ -64,7 +64,7 @@ plotdap("base")
 In addition to choosing a plotting method, `plotdap()` is where you can define
 properties of the background map, including the target projection using a valid
 coordinate reference system (CRS) definition. Projection is performed using the
-[PROJ.4 library](https://proj4.org/), and
+[PROJ.4 library](https://proj.org/), and
 [spatialreference.org](https://www.spatialreference.org) is a great resource for
 finding PROJ.4 CRS descriptions. Using the search utility, you can for example,
 [search for "South
@@ -514,7 +514,8 @@ The `plotdap()` interface is designed so that you can plot both tables and grids
 ```{r overlay, echo = TRUE, eval = FALSE}
 p <-   add_griddap(plotdap(), 
     murSST_west, 
-    ~analysed_sst
+    ~analysed_sst,
+    fill = "thermal"
     ) 
 p1 <-   add_tabledap(p,
     sardines, 
