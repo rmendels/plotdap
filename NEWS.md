@@ -1,3 +1,8 @@
+# plotdap 1.0.1
+
+ Correctly removed dependency on rgeos, rgdal
+
+
 # plotdap 1.0.0
 
  Removed direct dependency on rgeos, rgdal

@@ -1,13 +1,13 @@
 ## Various minor fixes
 
-Removed dependency on rgeos, rgdal
-Fixed broken URLs in DESCRIPTION, vignette
+Correctly removed dependency on rgeos, rgdal
+
 
 
 
 
 ## Test environments
-* local OS X install, R 4.2.1
+* local OS X install, R 4.2.2
 * rhub
 * macOS-builder
 * win-builder (devel and release)
