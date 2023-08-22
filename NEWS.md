@@ -1,3 +1,7 @@
+# plotdap 1.0.2
+  
+  fixed problem with package level documentation not working properly
+
 # plotdap 1.0.1
 
  Correctly removed dependency on rgeos, rgdal

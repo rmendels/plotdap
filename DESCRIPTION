@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 1.0.1
-Date: 2022-12-21
+Version: 1.0.2
+Date: 2023-08-21
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))

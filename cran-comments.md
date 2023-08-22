@@ -1,13 +1,9 @@
-## Various minor fixes
+## Minor fix
 
-Correctly removed dependency on rgeos, rgdal
-
-
-
-
+fixes problem with package level documentation
 
 ## Test environments
-* local OS X install, R 4.2.2
+* local OS X install, R 4.3.1
 * rhub
 * macOS-builder
 * win-builder (devel and release)
@@ -16,9 +12,7 @@ Correctly removed dependency on rgeos, rgdal
 
 ### OS X
 
-Duration: 4m 23.5s
-
-0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+OK
 
 ### Winbuilder release
 
