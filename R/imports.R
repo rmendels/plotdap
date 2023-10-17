@@ -1,4 +1,5 @@
 #' @import rerddap
+#' @import mapdata
 #' @importFrom utils packageVersion getFromNamespace
 #' @importFrom stats quantile setNames
 #' @importFrom tidyr gather_

@@ -1,6 +1,6 @@
 ## Minor fix
 
-fixes problem with package level documentation
+Removes archived package maptools from Suggests
 
 ## Test environments
 * local OS X install, R 4.3.1
@@ -23,9 +23,4 @@ OK
 OK
 
 
-### Local Fedora
-
-Duration: 3m 08s
-
-0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 

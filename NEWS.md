@@ -1,3 +1,7 @@
+# plotdap 1.0.3
+
+  Removed archived maptools from Suggests
+
 # plotdap 1.0.2
   
   fixed problem with package level documentation not working properly

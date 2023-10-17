@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 1.0.2
-Date: 2023-08-21
+Version: 1.0.3
+Date: 2023-10-17
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 URL: https://github.com/rmendels/plotdap
 BugReports: https://github.com/rmendels/plotdap/issues
 Depends: 
-   R (>= 4.0.0)
+   R (>= 4.3.0)
 Imports:
   cmocean,
   dplyr,
@@ -20,6 +20,7 @@ Imports:
   lazyeval,
   lubridate,
   magrittr,
+  mapdata,
   maps,
   raster,
   rerddap (>= 0.8.0),
@@ -30,8 +31,6 @@ Imports:
 Suggests:
   Cairo,
   knitr,
-  mapdata,
-  maptools,
   rmarkdown,
   testthat
 RoxygenNote: 7.2.3
