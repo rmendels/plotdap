@@ -1,6 +1,6 @@
 # plotdap 1.1.0
 
-- Revised to work with 'ggplot2' version 3.5.2 which had major changes
+- Revised to work with changes in 'ggplot2' 
 - Removed use of deprecated 'aes_string()' and 'aes_()', using 'rlang' constructs instead
 - Updated the vignette
 

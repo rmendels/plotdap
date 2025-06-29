@@ -19,7 +19,7 @@ The development version is available from Github and can be installed
 with:
 
 ``` r
-devtools::install_github('ropensci/plotdap')
+devtools::install_github('rmendels/plotdap')
 ```
 
 ## Functions
