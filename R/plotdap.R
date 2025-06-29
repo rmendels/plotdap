@@ -47,7 +47,8 @@ plotdap <- function(method = c("ggplot2", "base"),
   method <- match.arg(method, method)
 
   # packages used in both methods
-  require_packages(c("sf", "maps", "lazyeval", "rgeos", "rgdal", "maptools"))
+  #require_packages(c("sf", "maps", "lazyeval", "rgeos", "rgdal", "maptools"))
+  #require_packages(c("sf", "maps", "lazyeval",  "maptools"))
 
   # maps is bad at namespacing
   try_require("mapdata", "plotdap")
@@ -70,7 +71,8 @@ plotdap <- function(method = c("ggplot2", "base"),
       crs = sf::st_crs(bgMap),
       datum = datum
     )
-    return(structure(p2, class = c("ggplotdap", class(p))))
+    # return(structure(p2, class = c("ggplotdap", class(p))))
+    return(structure(p2, class = "ggplotdap"))
   }
 
   # construct an custom object for base plotting...

@@ -45,7 +45,7 @@ and the development version can be installed with:
 
 
 ```{r, eval = FALSE}
-devtools::install_github('ropensci/plotdap')
+devtools::install_github('rmendels/plotdap')
 ```
 
 
@@ -65,13 +65,13 @@ In addition to choosing a plotting method, `plotdap()` is where you can define
 properties of the background map, including the target projection using a valid
 coordinate reference system (CRS) definition. Projection is performed using the
 [PROJ.4 library](https://proj.org/), and
-[spatialreference.org](https://www.spatialreference.org) is a great resource for
+[spatialreference.org](https://spatialreference.org) is a great resource for
 finding PROJ.4 CRS descriptions. Using the search utility, you can for example,
 [search for "South
-Pole"](https://spatialreference.org/ref/sr-org/?search=South+Pole&srtext=Search)
-and pick from a number of options. Here I've chosen the [MODIS South Pole
-Stereographic](https://spatialreference.org/ref/sr-org/8375/) option and
-copy-pasted the [Proj4 page](https://spatialreference.org/ref/sr-org/8375/proj4/)
+Pole"](https://spatialreference.org/ref/?search=South+Pole&srtext=Search)
+and pick from a number of options. Here I've chosen the [South Pole
+Stereographic](https://spatialreference.org/ref/esri/102021/) option and
+copy-pasted the [Proj4 page](https://spatialreference.org/ref/esri/102021/proj4.txt)
 with the CRS definition:
 
 
@@ -135,7 +135,7 @@ particularly important for maps that will cross the dateline. So for example to 
 the hi-res outlines for VIIIRS SST off the coast of North America:
 
 ```{r get_viirsSST, eval = FALSE }
-sstInfo <- rerddap::info('erdVHsstaWS3day')
+sstInfo <- rerddap::info('erdVHsstaWS3day', url = 'https://coastwatch.pfeg.noaa.gov/erddap/')
 # get latest 3-day composite sst
 viirsSST <- rerddap::griddap(sstInfo, 
                              latitude = c(41., 31.), 
@@ -466,7 +466,7 @@ plotdap(mapData = w) %>%
 ![](viirsSST_100000_mask.png)
 
 
-The “Simple Ocean Data Assimilation (SODA)” model (see https://www2.atmos.umd.edu/~ocean/) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
+The “Simple Ocean Data Assimilation (SODA)” model (see https://climatedataguide.ucar.edu/climate-data/soda-simple-ocean-data-assimilation) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
 
 First, get the SODA data:
 
@@ -485,7 +485,9 @@ soda70 <- rerddap::griddap(soda70Info,
 
 ``` 
 
-then plot with `plotdap`
+Unfortunately some recent changes in `ggplot2` make it so `plotdap`can no longer directly cross the dateline,  but it can be tricked into doing so.  Since the data cross the dateline, it is necessary to use the  “world2Hires” continental outlines in the package mapdata which is Pacific Ocean centered. Unfortunatley there is a small problem where the outlines from certain countries wrap and mistakenly appear in plots, and those countries must be removed, as done below.
+
+By using the function 'add_ggplot()' `plotdap` cna still produce the desired plot:
 
 ```{r soda70, echo= TRUE, eval = FALSE}
 remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", 
@@ -495,17 +497,21 @@ w <- map("mapdata::world2Hires", plot = FALSE, fill = TRUE,
          ylim = ypos, xlim = xpos)
 w <- map("mapdata::world2Hires", regions = w$names[!(w$names %in% remove)], 
          plot = FALSE, fill = TRUE, ylim = ypos, xlim = xpos)
-# plot result
-plotdap(mapData = w) %>%
-        add_griddap(
-          soda70, 
-          ~temp, 
-          fill = "thermal"
-          ) %>%
-        print(landmask = TRUE) 
+cols <- cmocean::cmocean('thermal')(256)
+r <- terra::rast(soda70$data[, c("longitude", "latitude", "temp")], type = "xyz")
+r_poly <- terra::as.polygons(r)
+r_sf <- sf::st_as_sf(r_poly)
+sf::st_crs(r_sf) <- 4326
+p <- plotdap(mapData = w)
+p <- add_ggplot(p, ggplot2::geom_sf(data = r_sf, ggplot2::aes(fill = temp), color = NA) )
+p <- add_ggplot(p, ggplot2::scale_fill_gradientn(name ='temp', colors = cols) )
+p
 
 ```
+
+
 ![](soda70.png)
+An advantage of still using `plotdap` over just using `ggplot2` directly is the result is still a `plotdap` object in case it is desried to use `plotdap` to combine several `rerddap` extracts.
 
 ## Combining tables/grids
 
@@ -568,7 +574,7 @@ plotdap(mapTitle = "Reset colorscale limits") %>%
     add_ggplot(
        scale_fill_gradientn(colours = temp_color, na.value = NA, limits = c(10, 20)),
         scale_colour_gradientn(colors = temp_color, na.value = NA, limits = c(10, 20)),
-        guides(colour = FALSE)
+        guides(colour = 'none')
      ) %>%
      print(landmask = TRUE)
 ```

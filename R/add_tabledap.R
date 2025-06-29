@@ -2,8 +2,8 @@
 #'
 #' \code{add_tabledap} adds the data from an 'rerddap::tabledap()' call to
 #' a 'plotdap' map
-#' @param plot a \link{plotdap} object.
-#' @param table a \link{tabledap} object.
+#' @param plot a \link[plotdap]{plotdap} object.
+#' @param table a \link[rerddap]{tabledap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
 #' @param color either a character string of length 1 matching a name in \code{cmocean}
 #' or a vector of color codes. This defines the colorscale used to encode values
@@ -89,38 +89,37 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
     cols <- color
   }
 
-  if (is_ggplotdap(plot)) {
 
-    if (animate && "time" %in% names(table)) {
-      try_gganimate()
-      plot$animate <- TRUE
-      plot$nper <- length(unique(table$time))
-      plot$ggplot <- plot$ggplot +
-        gganimate::transition_manual(factor(time), cumulative = cumulative) +
-        ggplot2::labs(title = "{current_frame}")
-    }
-    if (length(plot$ggplot$layers) == 1) {
-      return(
-        add_ggplot(
-          plot,
-          geom_sf(data = table, mapping = aes_(colour = var),
-                  size = size, pch = shape, ...),
-          scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols)
+    if (is_ggplotdap(plot)) {
+
+      if (animate && "time" %in% names(table)) {
+        try_gganimate()
+        plot$animate <- TRUE
+        plot$nper <- length(unique(table$time))
+        plot$ggplot <- plot$ggplot +
+          gganimate::transition_manual(factor(time), cumulative = cumulative) +
+          ggplot2::labs(title = "{current_frame}")
+      }
+      if (length(plot$ggplot$layers) == 1) {
+        return(
+          add_ggplot(
+            plot,
+            geom_sf(data = table, mapping = ggplot2::aes(colour = !!rlang::f_rhs(var)),
+                    size = size, pch = shape, ...),
+            scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
         )
-      )
-    } else {
-      #plot$ggplot <- plot$ggplot + ggnewscale::new_scale_colour() + ggnewscale::new_scale_fill()
-      return(
-        add_ggplot(
-          plot,
-          ggnewscale::new_scale_colour(),
-          geom_sf(data = table, mapping = aes_(colour = var),
-                  size = size, pch = shape, ...),
-          scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
-          #scale_colour_gradientn(colours = cols)
-      )
+      } else {
+        #plot$ggplot <- plot$ggplot + ggnewscale::new_scale_colour() + ggnewscale::new_scale_fill()
+        return(
+          add_ggplot(
+            plot,
+            ggnewscale::new_scale_colour(),
+            geom_sf(data = table, mapping = ggplot2::aes(colour = !!rlang::f_rhs(var)),
+                    size = size, pch = shape, ...),
+            scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
+        )
+      }
     }
-  }
 
 
   if (animate) {

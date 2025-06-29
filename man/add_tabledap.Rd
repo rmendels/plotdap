@@ -17,9 +17,9 @@ add_tabledap(
 )
 }
 \arguments{
-\item{plot}{a \link{plotdap} object.}
+\item{plot}{a \link[plotdap]{plotdap} object.}
 
-\item{table}{a \link{tabledap} object.}
+\item{table}{a \link[rerddap]{tabledap} object.}
 
 \item{var}{a formula defining a variable, or function of variables to visualize.}
 
@@ -61,7 +61,7 @@ sardines <- rerddap::tabledap(
  'FRDCPSTrawlLHHaulCatch',
  fields = c('latitude',  'longitude', 'time', 'scientific_name', 'subsample_count'),
   'time>=2010-01-01', 'time<=2012-01-01',
-  scientific_name="Sardinops sagax"
+  'scientific_name="Sardinops sagax"'
   )
 }
 

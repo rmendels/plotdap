@@ -19,7 +19,7 @@ add_griddap(
 \arguments{
 \item{plot}{a \link{plotdap} object.}
 
-\item{grid}{a \link{griddap} object.}
+\item{grid}{a \link[rerddap]{griddap} object.}
 
 \item{var}{a formula defining a variable, or function of variables to visualize.}
 

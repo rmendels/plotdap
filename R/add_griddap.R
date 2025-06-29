@@ -3,7 +3,7 @@
 #' \code{add_griddap} adds the data from an 'rerddap::griddap() call to
 #' a 'plotdap' map
 #' @param plot a \link{plotdap} object.
-#' @param grid a \link{griddap} object.
+#' @param grid a \link[rerddap]{griddap} object.
 #' @param var a formula defining a variable, or function of variables to visualize.
 #' @param fill either a character string of length 1 matching a name in the
 #' package \code{cmocean} or a vector of color codes.
@@ -190,7 +190,9 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       add_ggplot(
         plot,
         geom_sf(data = sg,
-              mapping = ggplot2::aes_string(fill = var_name, colour = var_name), ...),
+              mapping = ggplot2::aes(fill = .data[[var_name]], colour = .data[[var_name]]), ...),
+        #geom_sf(data = sg,
+                #mapping = ggplot2::aes_string(fill = var_name, colour = var_name), ...),
         scale_fill_gradientn(name = var_name, colors = cols),
         scale_colour_gradientn(colors = cols)
         #ggplot2::guides(colour = "none")

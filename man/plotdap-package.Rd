@@ -3,8 +3,7 @@
 \docType{package}
 \name{plotdap-package}
 \alias{plotdap-package}
-\alias{_PACKAGE}
-\title{plotdap: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package}
+\title{plotdap: Easily Visualize Data from 'ERDDAP™' Servers via the 'rerddap' Package}
 \description{
 Easily visualize and animate 'tabledap' and 'griddap' objects obtained via the
 'rerddap' package in a simple one-line command,  using either base graphics or

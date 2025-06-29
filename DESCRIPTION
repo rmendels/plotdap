@@ -1,7 +1,7 @@
 Package: plotdap
-Title: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
-Version: 1.0.3
-Date: 2023-10-17
+Title: Easily Visualize Data from 'ERDDAP™' Servers via the 'rerddap' Package
+Version: 1.1.0
+Date: 2025-06-28
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -23,7 +23,8 @@ Imports:
   mapdata,
   maps,
   raster,
-  rerddap (>= 0.8.0),
+  rerddap (>= 1.0.0),
+  rlang,
   scales,
   sf,
   tidyr,
@@ -33,7 +34,7 @@ Suggests:
   knitr,
   rmarkdown,
   testthat
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr
