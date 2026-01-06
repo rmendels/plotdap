@@ -1,3 +1,9 @@
+# plotdap 1.1.1
+
+ - Improved version of 'bbox_set' to create interactive plots using 'plotly:ggplotly()'
+ - Some tweaks for speed improvement
+ - Updated vignette
+
 # plotdap 1.1.0
 
 - Revised to work with changes in 'ggplot2' 

@@ -1,13 +1,10 @@
-## fix to work with ggplot2 update
-
-Removes archived package maptools from Suggests
+## improved bbox_set function,  interactive plots
 
 ## Test environments
-* local OS X install, R 4.5.1 with ggplot2 release candidate
-* local OS X install, R 4.5.0 with ggplot2 released version
+* local OS X install, R 4.5.2 
 * macOS-builder
 * win-builder (devel and release)
-* r-universe all builds
+* r-hub ubuntu release
 
 ## R CMD check results
 
