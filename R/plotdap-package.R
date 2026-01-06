@@ -1,4 +1,4 @@
-#' plotdap: Easily Visualize Data from 'ERDDAP' Servers via the 'rerddap' Package
+#' plotdap: Easily Visualize Data from 'ERDDAP™' Servers via the 'rerddap' Package
 #'
 #'
 #' Easily visualize and animate 'tabledap' and 'griddap' objects obtained via the

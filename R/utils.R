@@ -90,7 +90,7 @@ format_table <- function(table, .info) {
 # sf is not properly importing rgeos.
 # I need to import it, but causes note if not
 # referenced. Here is a dummy function.
-dummy <- function() rgeos::getScale()
+#dummy <- function() rgeos::getScale()
 # dummy2 <- function() rgdal::checkCRSArgs("+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs")
 
 # This is likely WRONG, SAD!
