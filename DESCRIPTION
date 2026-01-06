@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP™' Servers via the 'rerddap' Package
-Version: 1.1.0
-Date: 2025-06-28
+Version: 1.1.1
+Date: 2026-01-06
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -32,9 +32,10 @@ Imports:
 Suggests:
   Cairo,
   knitr,
+  plotly,
   rmarkdown,
   testthat
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr

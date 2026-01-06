@@ -2,12 +2,18 @@
 title: "Using plotdap"
 author: ""
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+
 vignette: >
   %\VignetteIndexEntry{Using plotdap}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
+
+
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -25,10 +31,13 @@ library(rerddap)
 ```
 
 
-# plotdap
+# 
+
 The R package **plotdap** makes it easy to visualize 'tabledap' and 'griddap' objects obtained via the [**rerddap**](https://CRAN.R-project.org/package=rerddap) package. Maps can be made using either base or ggplot2 graphics, and the user does not need to know the intricacies of obtaining continental outlines, projections, and combining those with the data to form maps. Animations of the data are also readily obtained. `plotdap` works in a similar fashion with either tables or grids return by `rerddap` further simplifying the mapping process.
 
 A user who desires fine control of their maps should learn how to map the data themselves  - some examples are give in the `rerddap` vignette.  But `plotdap` provides a simplified workflow of obtaining data using `rerddap` and quickly and simply mapping the data.  In what follows we go over how to install  `plotdap` and it's basic usage,  as well as how to utilize some of the more important options in the package in order to improve the map.
+
+A new feature is that the function `bbox_set()` can now be used to create interactive plots using `plotly::ggplotly()`, see
 
 
 ## Installation
@@ -471,6 +480,7 @@ The “Simple Ocean Data Assimilation (SODA)” model (see https://climatedatagu
 First, get the SODA data:
 
 ```{r soda70_get, echo = TRUE, eval = FALSE}
+
 soda70Info <- rerddap::info('erdSoda331oceanmday')
 xpos <- c(135.25, 240.25)
 ypos <- c(20.25, 60.25)
@@ -620,7 +630,7 @@ add_griddap(
 
 
 ![y_wind animation](y_wind.gif)
-The frames per second and the total number of frames for an animated `plotdap` object `p` can be controlled calling `gganimate::animate(p$ggplot, ...)`  with the desired other settings. Unfortunately,  the map bounding box set in `p` may not be what is desired, because when `plotdap` prints an object it calculates a good bounding box for a map,  but that is not stored in the object `p`. A utility function `bbox_set()` is included which will add a desired bounding box.
+The frames per second and the total number of frames for an animated `plotdap` object `p` can be controlled calling `gganimate::animate(p$ggplot, ...)`  with the desired other settings. Unfortunately,  the map bounding box set in `p` may not be what is desired, because when `plotdap` prints an object it calculates a good bounding box for a map,  but that is not stored in the object `p`. An improved version of the utility function `bbox_set()` is included which will set the desired bounding box.
 
 ```{r, eval = FALSE, echo = TRUE }
 p <- add_griddap(
@@ -635,5 +645,39 @@ p <- add_griddap(
   p <- bbox_set(p, xlim, ylim)
 ```
 
+## Interactive `plotdap` objects and `bbox_set()`
 
+A new verion of the function `bbox_set()` is now included.  It has the arguments:
 
+```{r, echo = TRUE, eval = FALSE}
+
+bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interactive = FALSE)
+
+```
+
+If the values for "xlim" and "ylim" are not given,  then the function will determine the limits and projection of the `plotdap` object,  and set this in the `ggplot2` part of the the `plotdap` object.  If "interactive" is set to "TRUE",  then a `ggplot2` object is returned that works properly with the function `plotly::ggplotly()`.
+
+```{r, echo = TRUE, eval = FALSE}
+library(plotly)
+
+myURL <- "https://coastwatch.pfeg.noaa.gov/erddap/"
+
+sstInfo <- rerddap::info('erdVHsstaWS3day', url = myURL)
+# get latest 3-day composite sst
+viirsSST <- rerddap::griddap(sstInfo, 
+                             latitude = c(41., 31.), 
+                             longitude = c(-128., -115), 
+                             time = c('last','last'), 
+                             fields = 'sst')
+
+w <- map("worldHires", xlim = c(-140., -114), ylim = c(30., 42.), fill = TRUE, plot = FALSE)
+my_plot <- add_griddap(plotdap(mapData = w), viirsSST, ~sst, fill = "thermal" )
+
+my_plot1 <- bbox_set(my_plot, xlim = c(-128., -115), ylim = c(31, 41.), interactive = TRUE)
+
+# must have '"tooltip = "text"' to work properly.
+plotly::ggplotly(my_plot1, tooltip = "text")
+
+```
+
+The resulting plot is an interactive plot that as you mouse over the data will display the latitude,  longitude and value at any point.  As the plot takes a long time to create and is quote large,  both of which cause problems with CRAN, it is not displayed here.

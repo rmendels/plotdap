@@ -4,17 +4,28 @@
 \alias{bbox_set}
 \title{change bounding box in plotdap object}
 \usage{
-bbox_set(plotobj, xlim, ylim)
+bbox_set(
+  plotobj,
+  landmask = TRUE,
+  xlim = NULL,
+  ylim = NULL,
+  interactive = FALSE
+)
 }
 \arguments{
 \item{plotobj}{valid plotdap object}
 
-\item{xlim}{new x-values of the bounding box}
+\item{landmask}{optional: if true land is plotted over the data}
 
-\item{ylim}{new y-values of the bounding box}
+\item{xlim}{optional: new x-values of the bounding box otherwise taken from the plotdap object}
+
+\item{ylim}{optional: new y-values of the bounding box otherwise taken from the plotdap object}
+
+\item{interactive}{optional: if true  creates an interactive version of the graphic}
 }
 \value{
-a plotdap object
+a ggplot object with reset limits. If interactive is true,  then returns a
+           ggplot object that will work with the `plotly` package.
 }
 \description{
 \code{bbox_set}changes the bounding box in an plotdap object.
@@ -25,5 +36,5 @@ p <- plotdap()
 p <- add_tabledap(p, sardines, ~subsample_count)
 xlim = c(-125, -115)
 ylim <- c(30., 50.)
-p <- bbox_set(p, xlim, ylim)
+p <- bbox_set(p, xlim = xlim, ylim = ylim)
 }
