@@ -11,3 +11,5 @@ myPlot.png
 ^README_old\.Rmd$
 ^cran-comments\.md$
 ^tests$
+^\.github$
+
