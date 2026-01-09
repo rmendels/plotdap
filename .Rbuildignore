@@ -13,3 +13,4 @@ myPlot.png
 ^tests$
 ^\.github$
 
+^CRAN-SUBMISSION$

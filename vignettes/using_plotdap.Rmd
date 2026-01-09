@@ -475,7 +475,7 @@ plotdap(mapData = w) %>%
 ![](viirsSST_100000_mask.png)
 
 
-The “Simple Ocean Data Assimilation (SODA)” model (see https://climatedataguide.ucar.edu/climate-data/soda-simple-ocean-data-assimilation) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
+The “Simple Ocean Data Assimilation (SODA)” model (see https://soda.umd.edu) reconstructs the historical physical history of the ocean since the beginning of the 20th century. Here is the temperature at 70m depth for December 2015 for the North Pacific Ocean, as an example of using `plotdap()` when the data cross the dateline:
 
 First, get the SODA data:
 
