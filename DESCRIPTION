@@ -1,7 +1,7 @@
 Package: plotdap
 Title: Easily Visualize Data from 'ERDDAP™' Servers via the 'rerddap' Package
-Version: 1.1.1
-Date: 2026-01-06
+Version: 1.2.0
+Date: 2026-05-04
 Authors@R: c(
     person("Carson", "Sievert", role = "aut"),
     person("Roy", "Mendelssohn", role = c("aut", "ctb", "cre"), email = "roy.mendelssohn@noaa.gov"))
@@ -17,6 +17,7 @@ Imports:
   gganimate,
   ggnewscale,
   ggplot2 (>= 3.1.0),
+  isoband,
   lazyeval,
   lubridate,
   magrittr,
@@ -35,7 +36,7 @@ Suggests:
   plotly,
   rmarkdown,
   testthat
-RoxygenNote: 7.3.3
 LazyData: true
 Encoding: UTF-8
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

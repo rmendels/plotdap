@@ -27,12 +27,12 @@ install.packages("plotdap")
 The development version is available from Github and can be installed with:
 
 ```r
-devtools::install_github('ropensci/plotdap')
+devtools::install_github('rmendels/plotdap')
 ```
 
 ## Functions
 
-**plotdap** has four main functions and can produce plots in both base graphics
+**plotdap** has six main functions and can produce plots in both base graphics
 and `ggplot2` graphics,  though certain features ony work wih `ggplot2`:
 
 - `plotdap()` which sets up the base map:
@@ -54,7 +54,23 @@ and `ggplot2` graphics,  though certain features ony work wih `ggplot2`:
 
     + `add_ggplot(plot, ...)`
   
+- `bbox_set()`  which resets the bounding box as well as prepare the object foe interactive plotting:
 
+    +  'bbox_set(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interactive =    FALSE)' 
+    
+- `add_griddap_contours()` which adds contours to a `add_griddap()` object:
+
+    + `add_griddap_contours <- function(p,
+                                 data,
+                                 var,
+                                 n_breaks  = 10L,
+                                 breaks    = NULL,
+                                 lon_col   = "longitude",
+                                 lat_col   = "latitude",
+                                 color     = "black",
+                                 linewidth = 0.3,
+                                 alpha     = 1,
+                                 crs       = 4326L)`
 
 
 ## Examples

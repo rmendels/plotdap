@@ -1,3 +1,9 @@
+# plotdap 1.2.0
+
+- Contour plots using the R package 'isoband'
+- Vignette updated 
+- Some code refactoring
+
 # plotdap 1.1.1
 
  - Improved version of 'bbox_set' to create interactive plots using 'plotly:ggplotly()'

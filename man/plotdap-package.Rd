@@ -42,6 +42,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Roy Mendelssohn \email{roy.mendelssohn@noaa.gov} [contributor]
   \item Carson Sievert
 }
 

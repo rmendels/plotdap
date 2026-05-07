@@ -24,34 +24,39 @@ devtools::install_github('rmendels/plotdap')
 
 ## Functions
 
-**plotdap** has four main functions and can produce plots in both base
+**plotdap** has six main functions and can produce plots in both base
 graphics and `ggplot2` graphics, though certain features ony work wih
 `ggplot2`:
 
-  - `plotdap()` which sets up the base map:
-    
-      - `plotdap(method = c("ggplot2", "base"), mapData =
-        maps::map("world", plot = FALSE, fill = TRUE), crs = NULL, datum
-        = sf::st_crs(4326), mapTitle = NULL, mapFill = "gray80",
-        mapColor = "gray90", ...)`
+- `plotdap()` which sets up the base map:
 
-  - `add_tabledap()` which adds the results from a `rerddap::tabledap()`
-    call:
-    
-      - `add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),
-        size = 1.5, shape = 19, animate = FALSE, cumulative = FALSE,
-        ...)`
+  - `plotdap(method = c("ggplot2", "base"), mapData = maps::map("world",        plot = FALSE, fill = TRUE), crs = NULL, datum = sf::st_crs(4326),        mapTitle = NULL, mapFill = "gray80", mapColor = "gray90", ...)`
 
-  - `add_griddap()` which adds the results from a `rerddap::griddap()`
-    call:
-    
-      - `add_griddap(plot, grid, var, fill = "viridis", maxpixels
-        = 10000, time = mean, animate = FALSE, cumulative = FALSE, ...)`
+- `add_tabledap()` which adds the results from a `rerddap::tabledap()`
+  call:
 
-  - `add_ggplot()` allows customization of the plot when `ggplot2` is
-    used:
-    
-      - `add_ggplot(plot, ...)`
+  - `add_tabledap(plot, table, var, color = c("#132B43", "#56B1F7"),              size = 1.5, shape = 19, animate = FALSE,              cumulative = FALSE, ...)`
+
+- `add_griddap()` which adds the results from a `rerddap::griddap()`
+  call:
+
+  - `add_griddap(plot, grid, var, fill = "viridis", maxpixels = 10000,            time = mean, animate = FALSE, cumulative = FALSE, ...)`
+
+- `add_ggplot()` allows customization of the plot when `ggplot2` is
+  used:
+
+  - `add_ggplot(plot, ...)`
+
+- `bbox_set()` which resets the bounding box as well as prepare the
+  object foe interactive plotting:
+
+  - ‘bbox_set(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL,
+    interactive = FALSE)’
+
+- `add_griddap_contours()` which adds contours to a `add_griddap()`
+  object:
+
+  - `add_griddap_contours <- function(p,                            data,                            var,                            n_breaks  = 10L,                            breaks    = NULL,                            lon_col   = "longitude",                            lat_col   = "latitude",                            color     = "black",                            linewidth = 0.3,                            alpha     = 1,                            crs       = 4326L)`
 
 ## Examples
 
