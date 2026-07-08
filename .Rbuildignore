@@ -12,7 +12,7 @@ myPlot.png
 ^cran-comments\.md$
 ^tests$
 ^\.github$
-
+^CLAUDE\.md$
 ^CRAN-SUBMISSION$
 ^\.positai$
 ^\.claude$
