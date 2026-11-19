@@ -16,3 +16,6 @@ myPlot.png
 ^CRAN-SUBMISSION$
 ^\.positai$
 ^\.claude$
+^\.git$
+^plotdap-suggestions\.md
+

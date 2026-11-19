@@ -19,11 +19,11 @@
 #' p <- bbox_set(p, xlim = xlim, ylim = ylim)
 
 bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interactive = FALSE) {
-  if (!("ggplotdap" %in% class(plotobj))) {
+  if (!inherits(plotobj, "ggplotdap")) {
     stop("object passed not a plotdap object")
   }
   if (!is.null(xlim)){
-    if (!(length(xlim) == 2)) {
+    if (length(xlim) != 2) {
       stop("xlim does not contain two items")
     }
     if (xlim[1] > xlim[2]) {
@@ -31,7 +31,7 @@ bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interac
     }
   }
   if (!is.null(ylim)){
-    if (!(length(ylim) == 2)) {
+    if (length(ylim) != 2) {
       stop("ylim does not contain two items")
     }
     if (ylim[1] > ylim[2]) {

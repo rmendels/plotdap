@@ -116,18 +116,12 @@ print.ggplotdap <- function(x, ...) {
   }
   xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
   ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
-  suppressMessages(x <- add_ggplot(
+  x <- suppressMessages(add_ggplot(
     x, coord_sf(
       crs = x$crs, datum = x$datum,
       xlim = xlim, ylim = ylim
     )
   ))
-#  x <- add_ggplot(
-#    x, coord_sf(
-#      crs = x$crs, datum = x$datum,
-#      xlim = xlim, ylim = ylim
-#    )
-#  )
 
   if (isTRUE(x$animate)) {
     print(gganimate::animate(x$ggplot, nframes = x$nper,
@@ -217,7 +211,7 @@ print.plotdap <- function(x, ...) {
       )
     }
   }
-  x
+  invisible(x)
 }
 
 
@@ -420,12 +414,11 @@ lonPattern <- function() "^lon$|^lons$|^longitude$"
 
 # valid names for latitude
 latNames <- function() {
-  sub("\\$", "", sub("\\^", "", strsplit(latPattern(), "|", fixed = TRUE)[[1]]))
+  gsub("^\\^|\\$$", "", strsplit(latPattern(), "|", fixed = TRUE)[[1]])
 }
 
 lonNames <- function() {
-  sub("\\$", "", sub("\\^", "", strsplit(lonPattern(), "|", fixed = TRUE)[[1]]))
+  gsub("^\\^|\\$$", "", strsplit(lonPattern(), "|", fixed = TRUE)[[1]])
 }
-
 
 utils::globalVariables("variable")

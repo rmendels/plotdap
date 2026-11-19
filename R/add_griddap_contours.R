@@ -64,7 +64,7 @@ add_griddap_contours <- function(p,
                                  alpha     = 1,
                                  crs       = 4326L) {
 
-  if (!("ggplotdap" %in% class(p))) {
+  if (!inherits(p, "ggplotdap")) {
     stop("object passed not a plotdap object")
   }
 
