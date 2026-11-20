@@ -18,4 +18,6 @@ myPlot.png
 ^\.claude$
 ^\.git$
 ^plotdap-suggestions\.md
+^add_griddap_proposed\.R$
+
 

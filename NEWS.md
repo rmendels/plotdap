@@ -1,3 +1,17 @@
+# plotdap 1.2.1 (development)
+
+- 'add_griddap()' with the 'ggplot2' method now draws grids with 'geom_raster()'
+  instead of converting every cell to a polygon, which is several times faster
+  and allows a much larger 'maxpixels'. New argument 'render = "polygon"'
+  restores the previous behaviour.
+- 'bbox_set()' now uses the 'xlim'/'ylim' it is given (previously they were
+  checked but then ignored). Limits are in longitude/latitude and are converted
+  to the map projection; longitudes on a (180, 360) scale are shifted to match
+  the data.
+- Map limits on projected maps are now correct when contour layers from
+  'add_griddap_contours()' are present, and layers added with 'add_ggplot()'
+  that are not 'sf' objects no longer cause an error when printing.
+
 # plotdap 1.2.0
 
 - Contour plots using the R package 'isoband'

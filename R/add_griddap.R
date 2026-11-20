@@ -10,8 +10,9 @@
 #' This defines the colorscale used to encode values
 #' of \code{var}.
 #' @param maxpixels integer > 0. Maximum number of cells to use for the plot.
-#' If maxpixels < ncell(x), sampleRegular is used before plotting.
-#' If gridded=TRUE maxpixels may be ignored to get a larger sample
+#' If maxpixels < ncell(x), the grid is resampled before plotting.
+#' The default is small so the default plot is fast; larger values
+#' give finer resolution.
 #' @param time how to resolve multiple time frames. Choose one of the following:
 #' \itemize{
 #'   \item A function to apply to each observation at a particular location
@@ -22,8 +23,14 @@
 #' Currently only implemented for \code{method='ggplot2'} and requires the
 #' gganimate package.
 #' @param cumulative - if animation should be cumulative -default FALSE
-#' @param ... arguments passed along to \code{geom_sf()}
-#' (if \code{method='ggplot2'}, otherwise ignored).
+#' @param render how the grid is drawn when \code{method='ggplot2'}
+#' (ignored for \code{method='base'}). \code{"raster"} (the default) draws
+#' the grid as an image with \code{geom_raster()}, which is much faster and
+#' allows a larger \code{maxpixels}. \code{"polygon"} converts every cell to
+#' a polygon and draws it with \code{geom_sf()}, as in plotdap 1.2.x and earlier.
+#' @param ... arguments passed along to \code{geom_raster()} when
+#' \code{render = "raster"}, or to \code{geom_sf()} when
+#' \code{render = "polygon"} (if \code{method='ggplot2'}, otherwise ignored).
 #' @return A plotdap object
 #' @export
 #' @rdname add_griddap
@@ -49,6 +56,9 @@
 #' p <- plotdap(crs = "+proj=robin")
 #' p <- add_griddap(p, murSST, ~analysed_sst)
 #'
+#' # the pre-1.3 polygon rendering
+#' # p <- add_griddap(plotdap(), murSST, ~analysed_sst, render = "polygon")
+#'
 #'  # p <- plotdap(mapTitle = "Average wind over time")
 #'  # p <- add_griddap(p, QMwind, ~x_wind)
 #'
@@ -68,7 +78,8 @@
 
 add_griddap <- function(plot, grid, var, fill = "viridis",
                         maxpixels = 10000, time = mean, animate = FALSE,
-                        cumulative = FALSE, ...) {
+                        cumulative = FALSE, render = c("raster", "polygon"),
+                        ...) {
   if (!is.grid(grid))
     stop("The `grid` argument must be a `griddap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
@@ -76,6 +87,8 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   if (!is.function(time) && !is.character(time))
     stop("The `time` argument must be a function or a character string",
          call. = FALSE)
+  render <- match.arg(render)
+
 
   # create raster object from filename;
   # otherwise create a sensible raster from data
@@ -131,7 +144,6 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     )
     if (inherits(r, "RasterBrick")) {
       for (i in seq_len(raster::nlayers(r))) {
-        #r[[i]] <- raster::resample(r[[i]], rnew, method = 'bilinear')
         junk <- raster::resample(r[[i]], rnew, method = 'bilinear')
         if (i == 1) {
           temp <- junk
@@ -146,60 +158,52 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   }
 
   # assumes we apply sf::st_crs() to plot on initiation
+  # Projecting here means the raster cells form a regular grid in the
+  # plot's CRS, which is what geom_raster() needs.
   if (inherits(plot$crs, "crs")) {
     crs_string <- plot$crs$proj4string
     if (!is.na(plot$crs$epsg)) {
       epsg_string <- paste0("+init=epsg:", plot$crs$epsg)
       crs_string <- paste(epsg_string, crs_string)
     }
-    #r <- raster::projectRaster(r, crs = plot$crs$proj4string)
     r <- raster::projectRaster(r, crs = crs_string)
   }
 
   # color scale
-  # cols <- if (length(fill) == 1) rerddap::colors[[fill]] else fill
   if (length(fill) == 1) {
      if (fill == 'viridis') {
        cols <- viridis::viridis(256)
      } else {
        cols <- cmocean::cmocean(fill)(256)
-
      }
   }  else {
      cols <- fill
   }
 
+  # ggplot2 method
   if (is_ggplotdap(plot)) {
-    # TODO: not the most efficient approach, but it will have to do for now
-    # https://twitter.com/hadleywickham/status/841763265344487424
-    s <- sf::st_as_sf(raster::rasterToPolygons(r))
-    vars <- setdiff(names(s), "geometry")
     var_name <- lazyeval::f_text(var)
-    variable_name <- "variable"
-    sg <- sf::st_as_sf(tidyr::gather(s, {{variable_name}},{{var_name}}, vars))
+
+    grid_layers <- if (identical(render, "raster")) {
+      .grid_layer_raster(r, var_name, cols, ...)
+    } else {
+      .grid_layer_polygon(r, var_name, cols, ...)
+    }
+
     if (animate) {
       try_gganimate()
       plot$animate <- TRUE
-      plot$nper <- length(s) - 1
+      # one frame per raster layer (time step)
+      plot$nper <- raster::nlayers(r)
       plot$ggplot <- plot$ggplot +
         gganimate::transition_manual(variable, cumulative = cumulative) +
         ggplot2::labs(title = "{current_frame}")
     }
 
-    return(
-      add_ggplot(
-        plot,
-        geom_sf(data = sg,
-              mapping = ggplot2::aes(fill = .data[[var_name]], colour = .data[[var_name]]), ...),
-        #geom_sf(data = sg,
-                #mapping = ggplot2::aes_string(fill = var_name, colour = var_name), ...),
-        scale_fill_gradientn(name = var_name, colors = cols),
-        scale_colour_gradientn(colors = cols)
-        #ggplot2::guides(colour = "none")
-      )
-    )
+    return(do.call(add_ggplot, c(list(plot), grid_layers)))
   }
 
+  # base method
   if (animate) {
     warning(
       "Animations are currently only implemented for `method='ggplot2'`",
@@ -223,3 +227,57 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 
   plot
 }
+
+
+# ------------------------------------------------------------------------
+# Internal helpers for add_griddap() (ggplot2 method)
+# ------------------------------------------------------------------------
+
+# New default: one row per cell centre, drawn as an image by geom_raster().
+# r is already projected to the plot CRS, so x/y are plot coordinates and
+# coord_sf() (with default_crs = NULL) uses them as-is.
+.grid_layer_raster <- function(r, var_name, cols, ...) {
+  cell_df <- raster::as.data.frame(r, xy = TRUE)
+  layer_cols <- setdiff(names(cell_df), c("x", "y"))
+  # long format: one row per cell per time step, same columns
+  # ("variable" + var_name) as the polygon version so animation is unchanged.
+  # var_name is an argument here, so it must be injected with !! --
+  # {{var_name}} would capture the caller's expression, not its value.
+  cell_df <- tidyr::gather(cell_df, key = "variable", value = !!var_name,
+                           tidyr::all_of(layer_cols))
+  # NA cells (land, or outside the projection after projectRaster()) are
+  # kept: geom_raster() needs the full regular grid of x/y values, and
+  # dropping whole NA columns triggers its "uneven intervals" warning.
+  # na.rm = TRUE (unless the user passes their own via ...) stops the
+  # "Removed rows containing missing values" warning; na.value = NA in the
+  # scale draws any remaining NA cells as transparent.
+  geom_args <- utils::modifyList(list(na.rm = TRUE), list(...))
+
+  list(
+    do.call(ggplot2::geom_raster, c(
+      list(
+        data = cell_df,
+        mapping = ggplot2::aes(x = .data$x, y = .data$y, fill = .data[[var_name]])
+      ),
+      geom_args
+    )),
+    scale_fill_gradientn(name = var_name, colors = cols, na.value = NA)
+  )
+}
+
+# Old behaviour, kept for render = "polygon".
+.grid_layer_polygon <- function(r, var_name, cols, ...) {
+  s <- sf::st_as_sf(raster::rasterToPolygons(r))
+  vars <- setdiff(names(s), "geometry")
+  sg <- sf::st_as_sf(tidyr::gather(s, key = "variable", value = !!var_name,
+                                   tidyr::all_of(vars)))
+  list(
+    geom_sf(data = sg,
+            mapping = ggplot2::aes(fill = .data[[var_name]], colour = .data[[var_name]]),
+            ...),
+    scale_fill_gradientn(name = var_name, colors = cols),
+    scale_colour_gradientn(colors = cols)
+  )
+}
+
+

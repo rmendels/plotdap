@@ -13,6 +13,7 @@ add_griddap(
   time = mean,
   animate = FALSE,
   cumulative = FALSE,
+  render = c("raster", "polygon"),
   ...
 )
 }
@@ -29,8 +30,9 @@ This defines the colorscale used to encode values
 of \code{var}.}
 
 \item{maxpixels}{integer > 0. Maximum number of cells to use for the plot.
-If maxpixels < ncell(x), sampleRegular is used before plotting.
-If gridded=TRUE maxpixels may be ignored to get a larger sample}
+If maxpixels < ncell(x), the grid is resampled before plotting.
+The default is small so the default plot is fast; larger values
+give finer resolution.}
 
 \item{time}{how to resolve multiple time frames. Choose one of the following:
 \itemize{
@@ -45,8 +47,15 @@ gganimate package.}
 
 \item{cumulative}{- if animation should be cumulative -default FALSE}
 
-\item{...}{arguments passed along to \code{geom_sf()}
-(if \code{method='ggplot2'}, otherwise ignored).}
+\item{render}{how the grid is drawn when \code{method='ggplot2'}
+(ignored for \code{method='base'}). \code{"raster"} (the default) draws
+the grid as an image with \code{geom_raster()}, which is much faster and
+allows a larger \code{maxpixels}. \code{"polygon"} converts every cell to
+a polygon and draws it with \code{geom_sf()}, as in plotdap 1.2.x and earlier.}
+
+\item{...}{arguments passed along to \code{geom_raster()} when
+\code{render = "raster"}, or to \code{geom_sf()} when
+\code{render = "polygon"} (if \code{method='ggplot2'}, otherwise ignored).}
 }
 \value{
 A plotdap object
@@ -76,6 +85,9 @@ a 'plotdap' map
 
 p <- plotdap(crs = "+proj=robin")
 p <- add_griddap(p, murSST, ~analysed_sst)
+
+# the pre-1.3 polygon rendering
+# p <- add_griddap(plotdap(), murSST, ~analysed_sst, render = "polygon")
 
  # p <- plotdap(mapTitle = "Average wind over time")
  # p <- add_griddap(p, QMwind, ~x_wind)

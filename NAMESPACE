@@ -11,46 +11,60 @@ export(bbox_set)
 export(plotdap)
 import(mapdata)
 import(rerddap)
-importFrom(dplyr,arrange)
-importFrom(dplyr,between)
-importFrom(ggplot2,coord_sf)
-importFrom(ggplot2,geom_sf)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,ggtitle)
-importFrom(ggplot2,guide_colorbar)
-importFrom(ggplot2,guides)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,scale_colour_gradientn)
-importFrom(ggplot2,scale_fill_gradientn)
-importFrom(ggplot2,theme_bw)
+importFrom(dplyr,
+  arrange,
+  between
+)
+importFrom(ggplot2,
+  coord_sf,
+  geom_sf,
+  ggplot,
+  ggtitle,
+  guide_colorbar,
+  guides,
+  labs,
+  scale_colour_gradientn,
+  scale_fill_gradientn,
+  theme_bw
+)
 importFrom(magrittr,"%>%")
 importFrom(maps,map)
-importFrom(raster,brick)
-importFrom(raster,calc)
-importFrom(raster,crs)
-importFrom(raster,extent)
-importFrom(raster,isLonLat)
-importFrom(raster,ncell)
-importFrom(raster,ncol)
-importFrom(raster,nlayers)
-importFrom(raster,nrow)
-importFrom(raster,plot)
-importFrom(raster,projectRaster)
-importFrom(raster,raster)
-importFrom(raster,rasterToPolygons)
-importFrom(raster,resample)
-importFrom(raster,setExtent)
-importFrom(raster,values)
+importFrom(raster,
+  brick,
+  calc,
+  crs,
+  extent,
+  isLonLat,
+  ncell,
+  ncol,
+  nlayers,
+  nrow,
+  plot,
+  projectRaster,
+  raster,
+  rasterToPolygons,
+  resample,
+  setExtent,
+  values
+)
 importFrom(rlang,.data)
-importFrom(scales,col_numeric)
-importFrom(scales,rescale)
-importFrom(sf,st_as_sf)
-importFrom(sf,st_bbox)
-importFrom(sf,st_crs)
-importFrom(sf,st_graticule)
-importFrom(sf,st_transform)
-importFrom(stats,quantile)
-importFrom(stats,setNames)
+importFrom(scales,
+  col_numeric,
+  rescale
+)
+importFrom(sf,
+  st_as_sf,
+  st_bbox,
+  st_crs,
+  st_graticule,
+  st_transform
+)
+importFrom(stats,
+  quantile,
+  setNames
+)
 importFrom(tidyr,gather_)
-importFrom(utils,getFromNamespace)
-importFrom(utils,packageVersion)
+importFrom(utils,
+  getFromNamespace,
+  packageVersion
+)

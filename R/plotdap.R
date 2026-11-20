@@ -102,36 +102,34 @@ plotdap <- function(method = c("ggplot2", "base"),
 #' @param ... currently unused
 #' @export
 print.ggplotdap <- function(x, ...) {
-    # find a sensible x/y range....assuming all the layer data is sf
+  # find a sensible x/y range from the data layers
   gg <- x$ggplot
   dots <- list(...)
+  layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
   if (isTRUE(dots$landmask)) {
     gg$layers[1:2] <- rev(gg$layers[1:2])
-    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
-    bbs <- lapply(layer_data[1], sf::st_bbox)
+    layer_data[1:2] <- rev(layer_data[1:2])
+    lims <- .layers_range(layer_data[1], x$crs)
     x$ggplot <- gg
   } else {
-    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
-    bbs <- lapply(layer_data[-1], sf::st_bbox)
+    lims <- .layers_range(layer_data[-1], x$crs)
   }
-  xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
-  ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
   x <- suppressMessages(add_ggplot(
     x, coord_sf(
       crs = x$crs, datum = x$datum,
-      xlim = xlim, ylim = ylim
+      xlim = lims$xlim, ylim = lims$ylim
     )
   ))
 
   if (isTRUE(x$animate)) {
     print(gganimate::animate(x$ggplot, nframes = x$nper,
                              fps = 1, duration = x$nper))
-    invisible(x)
   } else {
     print(x$ggplot)
-    invisible(x)
   }
+  invisible(x)
 }
+
 
 
 
@@ -422,3 +420,106 @@ lonNames <- function() {
 }
 
 utils::globalVariables("variable")
+
+# ------------------------------------------------------------------------
+# Bounding-box / limits helpers (used by print.ggplotdap() and bbox_set())
+# ------------------------------------------------------------------------
+
+# Bounding box of one layer's data, in the plot CRS.
+#   - sf data (background map, tabledap points, polygon grids, contours):
+#     transformed to the plot CRS first. Contour layers are stored in
+#     EPSG:4326, so on a projected map their bbox used to be in degrees
+#     while every other layer was in metres.
+#   - geom_raster data frames (x/y cell centres in the plot CRS): only
+#     cells with data count (as with the old polygons, which dropped NA
+#     cells), widened by half a cell so the full cells are inside the limits.
+#   - anything else (e.g. a geom_text() added with add_ggplot()): NULL,
+#     so it is ignored instead of making sf::st_bbox() fail.
+.layer_bbox <- function(layer_data, crs) {
+  if (inherits(layer_data, "sf")) {
+    if (inherits(crs, "crs") && !is.na(crs) &&
+        !is.na(sf::st_crs(layer_data)) && sf::st_crs(layer_data) != crs) {
+      layer_data <- sf::st_transform(layer_data, crs)
+    }
+    return(sf::st_bbox(layer_data))
+  }
+  if (is.data.frame(layer_data) && all(c("x", "y") %in% names(layer_data))) {
+    layer_data <- layer_data[stats::complete.cases(layer_data), , drop = FALSE]
+    if (nrow(layer_data) == 0) return(NULL)
+    half_cell <- function(v) {
+      steps <- diff(sort(unique(v)))
+      if (length(steps) == 0) 0 else min(steps) / 2
+    }
+    dx <- half_cell(layer_data$x)
+    dy <- half_cell(layer_data$y)
+    return(c(
+      xmin = min(layer_data$x) - dx, ymin = min(layer_data$y) - dy,
+      xmax = max(layer_data$x) + dx, ymax = max(layer_data$y) + dy
+    ))
+  }
+  NULL
+}
+
+# Combined x/y range over a list of layer data, in the plot CRS.
+.layers_range <- function(layer_data_list, crs) {
+  bbs <- Filter(Negate(is.null), lapply(layer_data_list, .layer_bbox, crs = crs))
+  list(
+    xlim = Reduce(range, lapply(bbs, "[", c("xmin", "xmax"))),
+    ylim = Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
+  )
+}
+
+# Transform an xlim/ylim box from one CRS to another. The box edges are
+# densified (n points per edge) so curved edges in the target projection
+# are captured, not just the four corners. Points that fall outside the
+# target projection's valid area (Inf/NaN) are dropped.
+.transform_limits <- function(xlim, ylim, from, to, n = 50) {
+  xs <- seq(xlim[1], xlim[2], length.out = n)
+  ys <- seq(ylim[1], ylim[2], length.out = n)
+  ring <- rbind(
+    cbind(xs, ylim[1]), cbind(xlim[2], ys),
+    cbind(rev(xs), ylim[2]), cbind(xlim[1], rev(ys))
+  )
+  pts <- sf::st_sfc(sf::st_multipoint(ring), crs = from)
+  xy <- sf::st_coordinates(sf::st_transform(pts, to))
+  ok <- is.finite(xy[, "X"]) & is.finite(xy[, "Y"])
+  if (!any(ok)) {
+    stop("xlim/ylim lie outside the area valid for the map projection",
+         call. = FALSE)
+  }
+  list(xlim = range(xy[ok, "X"]), ylim = range(xy[ok, "Y"]))
+}
+
+# Work out the final limits for coord_sf(), in the plot CRS.
+#   user_xlim/user_ylim: what the user passed to bbox_set(), in lon/lat
+#                         (either may be NULL).
+#   data_xlim/data_ylim: the range of the data, already in the plot CRS.
+.resolve_limits <- function(user_xlim, user_ylim, data_xlim, data_ylim, crs) {
+  # nothing supplied: behave exactly as before
+  if (is.null(user_xlim) && is.null(user_ylim)) {
+    return(list(xlim = data_xlim, ylim = data_ylim))
+  }
+
+  # match latlon_adjust(): grids/tables entirely in (180, 360) were
+  # shifted to (-180, 0), so shift limits given on that scale too
+  if (!is.null(user_xlim) && all(dplyr::between(user_xlim, 180, 360))) {
+    user_xlim <- user_xlim - 360
+  }
+
+  lonlat <- !inherits(crs, "crs") || is.na(crs) || isTRUE(sf::st_is_longlat(crs))
+  if (lonlat) {
+    return(list(xlim = user_xlim %||% data_xlim, ylim = user_ylim %||% data_ylim))
+  }
+
+  # projected map: fill in whichever limit was not supplied from the data
+  # (converted to lon/lat), then convert the lon/lat box to the plot CRS
+  wgs84 <- sf::st_crs(4326)
+  if (is.null(user_xlim) || is.null(user_ylim)) {
+    data_ll <- .transform_limits(data_xlim, data_ylim, from = crs, to = wgs84)
+    user_xlim <- user_xlim %||% data_ll$xlim
+    user_ylim <- user_ylim %||% data_ll$ylim
+  }
+  .transform_limits(user_xlim, user_ylim, from = wgs84, to = crs)
+}
+
+

@@ -17,9 +17,12 @@ bbox_set(
 
 \item{landmask}{optional: if true land is plotted over the data}
 
-\item{xlim}{optional: new x-values of the bounding box otherwise taken from the plotdap object}
+\item{xlim}{optional: new longitude limits of the bounding box, in degrees,
+otherwise taken from the plotdap object. Longitudes on a (180, 360) scale
+are converted to (-180, 0) to match how plotdap stores the data.}
 
-\item{ylim}{optional: new y-values of the bounding box otherwise taken from the plotdap object}
+\item{ylim}{optional: new latitude limits of the bounding box, in degrees,
+otherwise taken from the plotdap object}
 
 \item{interactive}{optional: if true  creates an interactive version of the graphic}
 }
@@ -30,6 +33,11 @@ a ggplot object with reset limits. If interactive is true,  then returns a
 \description{
 \code{bbox_set}changes the bounding box in an plotdap object.
 Particularly needed if using gganimate::animate()
+}
+\details{
+\code{xlim} and \code{ylim} are always given in longitude/latitude,
+whatever projection the map uses; they are converted to the map's
+coordinate reference system before being applied.
 }
 \examples{
 p <- plotdap()

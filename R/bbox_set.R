@@ -5,11 +5,17 @@
 #' @export
 #' @param plotobj valid plotdap object
 #' @param landmask optional: if true land is plotted over the data
-#' @param xlim optional: new x-values of the bounding box otherwise taken from the plotdap object
-#' @param ylim optional: new y-values of the bounding box otherwise taken from the plotdap object
+#' @param xlim optional: new longitude limits of the bounding box, in degrees,
+#' otherwise taken from the plotdap object. Longitudes on a (180, 360) scale
+#' are converted to (-180, 0) to match how plotdap stores the data.
+#' @param ylim optional: new latitude limits of the bounding box, in degrees,
+#' otherwise taken from the plotdap object
 #' @param interactive optional: if true  creates an interactive version of the graphic
 #' @return a ggplot object with reset limits. If interactive is true,  then returns a
 #'            ggplot object that will work with the `plotly` package.
+#' @details \code{xlim} and \code{ylim} are always given in longitude/latitude,
+#' whatever projection the map uses; they are converted to the map's
+#' coordinate reference system before being applied.
 #'
 #' @examples
 #' p <- plotdap()
@@ -39,21 +45,29 @@ bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interac
     }
   }
   gg <- plotobj$ggplot
+  # NOTE: add_plotdap_tooltips() edits layer 2 in place
+  # (ggplot2 layers are environments), which is why the edit survives the
+  # `plotobj$ggplot <- gg` below. Fragile: depends on layer order.
   if (interactive) {plotobj <- add_plotdap_tooltips(plotobj)}
+  layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
   if (landmask) {
     gg$layers[1:2] <- rev(gg$layers[1:2])
-    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
-    bbs <- lapply(layer_data[1], sf::st_bbox)
+    layer_data[1:2] <- rev(layer_data[1:2])
+    data_lims <- .layers_range(layer_data[1], plotobj$crs)
     plotobj$ggplot <- gg
   } else {
-    layer_data <- lapply(gg$layers, function(y) y$layer_data(gg$data))
-    bbs <- lapply(layer_data[-1], sf::st_bbox)
+    data_lims <- .layers_range(layer_data[-1], plotobj$crs)
   }
-  xlim <- Reduce(range, lapply(bbs, "[", c("xmin", "xmax")))
-  ylim <- Reduce(range, lapply(bbs, "[", c("ymin", "ymax")))
+
+  # The old code validated xlim/ylim and then overwrote them with the data
+  # range, so user-supplied limits never took effect. They are now used,
+  # interpreted as lon/lat and converted to the plot CRS.
+  lims <- .resolve_limits(xlim, ylim, data_lims$xlim, data_lims$ylim,
+                          plotobj$crs)
+
   plotobj$ggplot <- plotobj$ggplot + ggplot2::coord_sf(
                  crs = plotobj$crs, datum = plotobj$datum,
-                  xlim = xlim, ylim = ylim
+                  xlim = lims$xlim, ylim = lims$ylim
                  )
   plotobj$ggplot
 }
@@ -63,21 +77,48 @@ bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interac
 add_plotdap_tooltips <- function(plotdap_obj) {
 
   # Get the data from layer 2
-  plot_data <- plotdap_obj$ggplot$layers[[2]]$data
+  data_layer <- plotdap_obj$ggplot$layers[[2]]
+  plot_data <- data_layer$data
 
-  # Extract centroid coordinates
-  coords <- sf::st_coordinates(sf::st_centroid(plot_data$geometry))
-  plot_data$lon <- coords[, "X"]
-  plot_data$lat <- coords[, "Y"]
+  if (inherits(plot_data, "sf")) {
+    # Extract centroid coordinates
+    coords <- sf::st_coordinates(sf::st_centroid(plot_data$geometry))
+    plot_data$lon <- coords[, "X"]
+    plot_data$lat <- coords[, "Y"]
+  } else {
+    # geom_raster() layer: x/y are cell centres in the plot CRS
+    crs <- plotdap_obj$crs
+    if (inherits(crs, "crs") && !is.na(crs) && !isTRUE(sf::st_is_longlat(crs))) {
+      pts <- sf::st_as_sf(plot_data[c("x", "y")], coords = c("x", "y"), crs = crs)
+      coords <- sf::st_coordinates(sf::st_transform(pts, 4326))
+      plot_data$lon <- coords[, "X"]
+      plot_data$lat <- coords[, "Y"]
+    } else {
+      plot_data$lon <- plot_data$x
+      plot_data$lat <- plot_data$y
+    }
+  }
 
-  # Get the variable name
-  var_name <- setdiff(names(plot_data), c("variable", "geometry", "lon", "lat"))[1]
+  # The plotted variable is whatever the layer maps to fill (griddap) or
+  # colour (tabledap). Evaluating that mapping also handles formulas such as
+  # ~log2(subsample_count). (Picking the first non-coordinate column, as
+  # before, chose `time` for tabledap data and round() then failed.)
+  var_aes <- data_layer$mapping$fill %||% data_layer$mapping$colour
+  if (!is.null(var_aes)) {
+    var_name <- rlang::as_label(var_aes)
+    var_values <- rlang::eval_tidy(var_aes, plot_data)
+  } else {
+    var_name <- setdiff(names(plot_data),
+                        c("x", "y", "variable", "geometry", "lon", "lat"))[1]
+    var_values <- plot_data[[var_name]]
+  }
+  if (is.numeric(var_values)) var_values <- round(var_values, 3)
 
   # Create tooltip text
   plot_data$hover_text <- paste0(
     "Lon: ", round(plot_data$lon, 3), "\n",
     "Lat: ", round(plot_data$lat, 3), "\n",
-    var_name, ": ", round(plot_data[[var_name]], 3)
+    var_name, ": ", var_values
   )
 
   # Update the layer
@@ -87,3 +128,5 @@ add_plotdap_tooltips <- function(plotdap_obj) {
   # Return modified object
   return(plotdap_obj)
 }
+
+utils::globalVariables("hover_text")
