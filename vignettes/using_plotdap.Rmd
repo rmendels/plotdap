@@ -649,3 +649,5 @@ plotly::ggplotly(my_plot1, tooltip = "text")
 ```
 
 The resulting plot is an interactive plot that as you mouse over the data will display the latitude, longitude and value at any point. As the plot takes a long time to create and is quote large, both of which cause problems with CRAN, it is not displayed here.
+
+When the plot contains a `griddap` layer, displaying it will produce a long warning that begins `'heatmap' objects don't have these attributes: 'mode'`. This is a known issue in `plotly::ggplotly()` that occurs for any raster layer drawn with `ggplot2::coord_sf()`, not something wrong with the plot, and the warning can be safely ignored.
