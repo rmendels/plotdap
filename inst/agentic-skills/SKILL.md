@@ -178,5 +178,5 @@ p_interactive <- bbox_set(p, interactive = TRUE)
 | Add gridded data | `add_griddap(plot, grid, var, ...)` |
 | Add contour lines to a grid layer | `add_griddap_contours(plot, data, var, ...)` |
 | Customize with raw ggplot2 | `add_ggplot(plot, ...)` |
-| Reset bounding box / add land mask / interactive tooltips | `bbox_set(plotobj, xlim, ylim, landmask, interactive)` |
+| Reset bounding box / add land mask / interactive tooltips | `bbox_set(plotobj, xlim = , ylim = , landmask = , interactive = )` (name the arguments: the second positional argument is `landmask`) |
 | Animate over time | `add_tabledap()`/`add_griddap(..., animate = TRUE)` — ggplot2 method only |

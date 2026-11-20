@@ -540,7 +540,7 @@ p <- add_griddap(
 )
   ylim <- c(30, 50)
   xlim <- c(-150, -120)
-  p <- bbox_set(p, xlim, ylim)
+  p <- bbox_set(p, xlim = xlim, ylim = ylim)
 ```
 
 ## Contour Plots {#contours}

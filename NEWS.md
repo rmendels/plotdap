@@ -4,10 +4,16 @@
   instead of converting every cell to a polygon, which is several times faster
   and allows a much larger 'maxpixels'. New argument 'render = "polygon"'
   restores the previous behaviour.
+- With 'bbox_set(interactive = TRUE)' the graticule lines are hidden when the
+  map has a grid layer: 'plotly' draws the grid as a heatmap, which it always
+  places beneath line traces, so the grid lines would otherwise cover the data.
 - 'bbox_set()' now uses the 'xlim'/'ylim' it is given (previously they were
   checked but then ignored). Limits are in longitude/latitude and are converted
   to the map projection; longitudes on a (180, 360) scale are shifted to match
   the data.
+- 'bbox_set(p, xlim, ylim)' with unnamed limits (the pre-1.1.1 form, still
+  used in the vignette) works again; previously the limits went to
+  'landmask' and the call failed with "the condition has length > 1".
 - Map limits on projected maps are now correct when contour layers from
   'add_griddap_contours()' are present, and layers added with 'add_ggplot()'
   that are not 'sf' objects no longer cause an error when printing.

@@ -17,6 +17,12 @@
 #' whatever projection the map uses; they are converted to the map's
 #' coordinate reference system before being applied.
 #'
+#' Before plotdap 1.1.1 the signature was \code{bbox_set(plotobj, xlim, ylim)},
+#' so older scripts call \code{bbox_set(p, xlim, ylim)} without naming the
+#' arguments. Such calls are still accepted: if the second argument is a
+#' numeric vector of length 2 it is taken as \code{xlim} and the third as
+#' \code{ylim}, with \code{landmask} left at its default.
+#'
 #' @examples
 #' p <- plotdap()
 #' p <- add_tabledap(p, sardines, ~subsample_count)
@@ -27,6 +33,20 @@
 bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interactive = FALSE) {
   if (!inherits(plotobj, "ggplotdap")) {
     stop("object passed not a plotdap object")
+  }
+  # pre-1.1.1 positional call bbox_set(p, xlim, ylim): `landmask` received
+  # xlim and `xlim` received ylim
+  if (is.numeric(landmask) && length(landmask) == 2) {
+    if (!is.null(ylim)) {
+      stop("bbox_set(): landmask must be TRUE or FALSE; ",
+           "pass limits as xlim = , ylim = ", call. = FALSE)
+    }
+    ylim <- xlim
+    xlim <- landmask
+    landmask <- TRUE
+  }
+  if (!is.logical(landmask) || length(landmask) != 1 || is.na(landmask)) {
+    stop("bbox_set(): landmask must be TRUE or FALSE", call. = FALSE)
   }
   if (!is.null(xlim)){
     if (length(xlim) != 2) {
@@ -69,6 +89,18 @@ bbox_set <- function(plotobj, landmask = TRUE, xlim = NULL, ylim = NULL, interac
                  crs = plotobj$crs, datum = plotobj$datum,
                   xlim = lims$xlim, ylim = lims$ylim
                  )
+  # plotly::ggplotly() turns a geom_raster() grid into a heatmap, and plotly
+  # always draws heatmaps beneath line traces, so the graticule would be
+  # drawn over the data. Drop the grid lines in that case; the axis labels
+  # stay. (With the old polygon grids the data hid the graticule anyway.)
+  has_raster <- any(vapply(plotobj$ggplot$layers,
+                           function(l) inherits(l$geom, "GeomRaster"),
+                           logical(1)))
+  if (interactive && has_raster) {
+    plotobj$ggplot <- plotobj$ggplot +
+      ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
+                     panel.grid.minor = ggplot2::element_blank())
+  }
   plotobj$ggplot
 }
 

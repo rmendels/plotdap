@@ -38,6 +38,12 @@ Particularly needed if using gganimate::animate()
 \code{xlim} and \code{ylim} are always given in longitude/latitude,
 whatever projection the map uses; they are converted to the map's
 coordinate reference system before being applied.
+
+Before plotdap 1.1.1 the signature was \code{bbox_set(plotobj, xlim, ylim)},
+so older scripts call \code{bbox_set(p, xlim, ylim)} without naming the
+arguments. Such calls are still accepted: if the second argument is a
+numeric vector of length 2 it is taken as \code{xlim} and the third as
+\code{ylim}, with \code{landmask} left at its default.
 }
 \examples{
 p <- plotdap()
