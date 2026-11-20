@@ -3,6 +3,7 @@
 S3method(print,ggplotdap)
 S3method(print,plotdap)
 export("%>%")
+export(add_bathymetry)
 export(add_ggplot)
 export(add_griddap)
 export(add_griddap_contours)

@@ -189,6 +189,11 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     } else {
       .grid_layer_polygon(r, var_name, cols, ...)
     }
+    # a second grid (e.g. one over add_bathymetry(type = "shade")) needs its
+    # own fill scale, as add_tabledap() does for colour
+    if (plot$ggplot$scales$has_scale("fill")) {
+      grid_layers <- c(list(ggnewscale::new_scale_fill()), grid_layers)
+    }
 
     if (animate) {
       try_gganimate()

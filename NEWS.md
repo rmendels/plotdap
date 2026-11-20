@@ -8,6 +8,11 @@
 - New argument 'group' in 'add_tabledap()' draws tracks (gliders, drifters,
   floats, ships, tagged animals) as one line per track, ordered by time, with
   the color varying along the track. Default 'NULL' keeps the point plot.
+- New function 'add_bathymetry()' adds ocean depth as contour lines
+  ('type = "contour"') or shading ('type = "shade"'), fetched from ETOPO1 on
+  ERDDAP for the area of the map (or a user-supplied 'griddap()' result).
+- 'add_griddap()' with the 'ggplot2' method now starts a new fill scale when
+  the plot already has one, so two grids each keep their own color bar.
 
 - 'add_griddap()' with the 'ggplot2' method now draws grids with 'geom_raster()'
   instead of converting every cell to a polygon, which is several times faster

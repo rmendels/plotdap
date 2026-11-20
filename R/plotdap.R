@@ -181,6 +181,17 @@ print.plotdap <- function(x, ...) {
       next
     }
 
+    # contour lines from add_bathymetry(): single color, no legend
+    if (inherits(layer, "plotdap_lines")) {
+      plot(
+        sf::st_geometry(layer),
+        add = TRUE,
+        col = props$color,
+        lwd = props$linewidth / 0.75
+      )
+      next
+    }
+
     rng <- range(props$values, na.rm = TRUE)
     pal <- scales::col_numeric(props$color, rng)
     breaks <- stats::quantile(props$values, 0:4/4, na.rm = TRUE)
