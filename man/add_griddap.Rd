@@ -14,6 +14,8 @@ add_griddap(
   animate = FALSE,
   cumulative = FALSE,
   render = c("raster", "polygon"),
+  baseline = NULL,
+  baseline_var = NULL,
   ...
 )
 }
@@ -52,6 +54,18 @@ gganimate package.}
 the grid as an image with \code{geom_raster()}, which is much faster and
 allows a larger \code{maxpixels}. \code{"polygon"} converts every cell to
 a polygon and draws it with \code{geom_sf()}, as in plotdap 1.2.x and earlier.}
+
+\item{baseline}{optional. When given, the map shows the anomaly
+\code{var - baseline} instead of \code{var}. Either a single number, or a
+\link[rerddap]{griddap} object such as a climatology or an earlier period.
+A \code{griddap} baseline with several time steps is averaged over time,
+and is interpolated onto the grid of \code{grid} if the two grids differ.
+Unless \code{fill} is given, anomalies use the diverging \code{cmocean}
+palette "balance" with color limits symmetric about zero.}
+
+\item{baseline_var}{a formula for the variable in \code{baseline}; defaults
+to \code{var}. Use it when the baseline dataset names the variable
+differently.}
 
 \item{...}{arguments passed along to \code{geom_raster()} when
 \code{render = "raster"}, or to \code{geom_sf()} when
@@ -104,5 +118,13 @@ p <- plotdap("base") \%>\%
 # multiple time periods
 p <- plotdap("base", mapTitle = "Average wind over time")
 p <- add_griddap(p, QMwind, ~x_wind)
+
+# anomaly: one month minus the mean of all three months
+p <- plotdap(mapTitle = "December 2016 x_wind anomaly")
+p <- add_griddap(p, QMwind, ~x_wind, time = "2016-12-16T00:00:00Z",
+                 baseline = QMwind)
+
+# anomaly from a fixed value
+p <- add_griddap(plotdap(), murSST, ~analysed_sst, baseline = 12)
 
 }

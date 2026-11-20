@@ -11,6 +11,13 @@
 - New function 'add_bathymetry()' adds ocean depth as contour lines
   ('type = "contour"') or shading ('type = "shade"'), fetched from ETOPO1 on
   ERDDAP for the area of the map (or a user-supplied 'griddap()' result).
+- New arguments 'baseline' and 'baseline_var' in 'add_griddap()' map
+  anomalies ('var' minus a number, or minus another 'griddap()' result such
+  as a climatology, averaged over time and interpolated onto the same grid).
+  Anomalies default to the diverging 'balance' palette with limits symmetric
+  about zero; animated grids show the anomaly for each time step.
+- 'add_griddap(time = "<time value>")' works again; it previously failed
+  with "object ... of mode 'function' was not found".
 - 'add_griddap()' with the 'ggplot2' method now starts a new fill scale when
   the plot already has one, so two grids each keep their own color bar.
 

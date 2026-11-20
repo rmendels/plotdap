@@ -192,21 +192,28 @@ print.plotdap <- function(x, ...) {
       next
     }
 
-    rng <- range(props$values, na.rm = TRUE)
+    # anomaly grids from add_griddap(baseline = ) carry limits symmetric
+    # about zero; otherwise the color scale spans the data
+    rng <- props$zlim %||% range(props$values, na.rm = TRUE)
     pal <- scales::col_numeric(props$color, rng)
-    breaks <- stats::quantile(props$values, 0:4/4, na.rm = TRUE)
+    breaks <- if (is.null(props$zlim)) {
+      stats::quantile(props$values, 0:4/4, na.rm = TRUE)
+    } else {
+      seq(rng[1], rng[2], length.out = 5)
+    }
 
     # plot rasters first, otherwise we have to fiddle with legends
     if (is_raster(layer)) {
-      raster::plot(
+      raster_args <- list(
         layer,
         add = TRUE,
         legend = FALSE,
         frame.plot = FALSE,
         # TODO: where does this scaling occur? In raster::plot()?
-        col = props$color,
-        ...
+        col = props$color
       )
+      if (!is.null(props$zlim)) raster_args$zlim <- props$zlim
+      do.call(raster::plot, c(raster_args, list(...)))
       graphics::legend(
         "bottomright",
         title = props$name,

@@ -28,6 +28,16 @@
 #' the grid as an image with \code{geom_raster()}, which is much faster and
 #' allows a larger \code{maxpixels}. \code{"polygon"} converts every cell to
 #' a polygon and draws it with \code{geom_sf()}, as in plotdap 1.2.x and earlier.
+#' @param baseline optional. When given, the map shows the anomaly
+#' \code{var - baseline} instead of \code{var}. Either a single number, or a
+#' \link[rerddap]{griddap} object such as a climatology or an earlier period.
+#' A \code{griddap} baseline with several time steps is averaged over time,
+#' and is interpolated onto the grid of \code{grid} if the two grids differ.
+#' Unless \code{fill} is given, anomalies use the diverging \code{cmocean}
+#' palette "balance" with color limits symmetric about zero.
+#' @param baseline_var a formula for the variable in \code{baseline}; defaults
+#' to \code{var}. Use it when the baseline dataset names the variable
+#' differently.
 #' @param ... arguments passed along to \code{geom_raster()} when
 #' \code{render = "raster"}, or to \code{geom_sf()} when
 #' \code{render = "polygon"} (if \code{method='ggplot2'}, otherwise ignored).
@@ -75,10 +85,19 @@
 #' p <- plotdap("base", mapTitle = "Average wind over time")
 #' p <- add_griddap(p, QMwind, ~x_wind)
 #'
+#' # anomaly: one month minus the mean of all three months
+#' p <- plotdap(mapTitle = "December 2016 x_wind anomaly")
+#' p <- add_griddap(p, QMwind, ~x_wind, time = "2016-12-16T00:00:00Z",
+#'                  baseline = QMwind)
+#'
+#' # anomaly from a fixed value
+#' p <- add_griddap(plotdap(), murSST, ~analysed_sst, baseline = 12)
+#'
 
 add_griddap <- function(plot, grid, var, fill = "viridis",
                         maxpixels = 10000, time = mean, animate = FALSE,
                         cumulative = FALSE, render = c("raster", "polygon"),
+                        baseline = NULL, baseline_var = NULL,
                         ...) {
   if (!is.grid(grid))
     stop("The `grid` argument must be a `griddap()` object", call. = FALSE)
@@ -88,7 +107,19 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     stop("The `time` argument must be a function or a character string",
          call. = FALSE)
   render <- match.arg(render)
-
+  anomaly <- !is.null(baseline)
+  if (anomaly) {
+    if (!is.grid(baseline) &&
+        !(is.numeric(baseline) && length(baseline) == 1 && is.finite(baseline))) {
+      stop("The `baseline` argument must be a `griddap()` object or a single number",
+           call. = FALSE)
+    }
+    if (!is.null(baseline_var) && !lazyeval::is_formula(baseline_var)) {
+      stop("The `baseline_var` argument must be a formula", call. = FALSE)
+    }
+    # diverging palette by default for anomalies
+    if (missing(fill)) fill <- "balance"
+  }
 
   # create raster object from filename;
   # otherwise create a sensible raster from data
@@ -101,7 +132,9 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 
   # if necessary, reduce a RasterBrick to a RasterLayer
   # http://gis.stackexchange.com/questions/82390/summarize-values-from-a-raster-brick-by-latitude-bands-in-r
-  if (body(time) == 'UseMethod("mean")') {
+  # (is.function() first: body() of a character `time` is an error, which
+  # made time = "<a time value>" fail before it was ever used)
+  if (is.function(time) && identical(body(time), quote(UseMethod("mean")))) {
     time <- function(x) mean(x, na.rm = TRUE)
   }
   if (raster::nlayers(r) > 1) {
@@ -129,6 +162,12 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
         call. = FALSE
       )
     }
+  }
+
+  # anomaly: subtract the baseline (before thinning and projection, so
+  # both are on the data's own lon/lat grid)
+  if (anomaly) {
+    r <- .subtract_baseline(r, baseline, baseline_var %||% var)
   }
 
   # simplify raster, if necessary
@@ -180,14 +219,25 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
      cols <- fill
   }
 
+  # anomalies: color limits symmetric about zero, so zero is the middle
+  # color of a diverging palette
+  zlim <- NULL
+  if (anomaly) {
+    max_abs <- suppressWarnings(max(abs(raster::values(r)), na.rm = TRUE))
+    if (is.finite(max_abs) && max_abs > 0) zlim <- c(-max_abs, max_abs)
+  }
+
   # ggplot2 method
   if (is_ggplotdap(plot)) {
     var_name <- lazyeval::f_text(var)
+    scale_name <- if (anomaly) paste(var_name, "anomaly") else var_name
 
     grid_layers <- if (identical(render, "raster")) {
-      .grid_layer_raster(r, var_name, cols, ...)
+      .grid_layer_raster(r, var_name, cols, ..., .limits = zlim,
+                         .scale_name = scale_name)
     } else {
-      .grid_layer_polygon(r, var_name, cols, ...)
+      .grid_layer_polygon(r, var_name, cols, ..., .limits = zlim,
+                          .scale_name = scale_name)
     }
     # a second grid (e.g. one over add_bathymetry(type = "shade")) needs its
     # own fill scale, as add_tabledap() does for colour
@@ -219,9 +269,11 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
   # TODO: more props!
   grid <- structure(
     r, props = list(
-      name = lazyeval::f_text(var),
+      name = if (anomaly) paste(lazyeval::f_text(var), "anomaly") else
+        lazyeval::f_text(var),
       values = raster::values(r),
-      color = cols
+      color = cols,
+      zlim = zlim
     )
   )
 
@@ -241,7 +293,8 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 # New default: one row per cell centre, drawn as an image by geom_raster().
 # r is already projected to the plot CRS, so x/y are plot coordinates and
 # coord_sf() (with default_crs = NULL) uses them as-is.
-.grid_layer_raster <- function(r, var_name, cols, ...) {
+.grid_layer_raster <- function(r, var_name, cols, ..., .limits = NULL,
+                               .scale_name = var_name) {
   cell_df <- raster::as.data.frame(r, xy = TRUE)
   layer_cols <- setdiff(names(cell_df), c("x", "y"))
   # long format: one row per cell per time step, same columns
@@ -266,7 +319,8 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       ),
       geom_args
     )),
-    scale_fill_gradientn(name = var_name, colors = cols, na.value = NA),
+    scale_fill_gradientn(name = .scale_name, colors = cols, na.value = NA,
+                         limits = .limits),
     # geom_raster() maps x/y, so ggplot2 would title the axes "x" and "y";
     # blank them to match geom_sf() maps (the graticule labels show lon/lat)
     ggplot2::labs(x = NULL, y = NULL)
@@ -274,7 +328,8 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
 }
 
 # Old behaviour, kept for render = "polygon".
-.grid_layer_polygon <- function(r, var_name, cols, ...) {
+.grid_layer_polygon <- function(r, var_name, cols, ..., .limits = NULL,
+                                .scale_name = var_name) {
   s <- sf::st_as_sf(raster::rasterToPolygons(r))
   vars <- setdiff(names(s), "geometry")
   sg <- sf::st_as_sf(tidyr::gather(s, key = "variable", value = !!var_name,
@@ -283,9 +338,28 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
     geom_sf(data = sg,
             mapping = ggplot2::aes(fill = .data[[var_name]], colour = .data[[var_name]]),
             ...),
-    scale_fill_gradientn(name = var_name, colors = cols),
-    scale_colour_gradientn(colors = cols)
+    scale_fill_gradientn(name = .scale_name, colors = cols, limits = .limits),
+    scale_colour_gradientn(colors = cols, limits = .limits, guide = "none")
   )
+}
+
+# Subtract a baseline (a single number, or a griddap object averaged over
+# time and interpolated onto r's grid) from every layer of r, keeping r's
+# layer names (they label the animation frames).
+.subtract_baseline <- function(r, baseline, baseline_var) {
+  layer_names <- names(r)
+  if (is.numeric(baseline)) {
+    r <- r - baseline
+  } else {
+    b <- .grid_component(baseline, baseline_var, mean)
+    if (!raster::compareRaster(r, b, extent = TRUE, rowcol = TRUE,
+                               crs = FALSE, stopiffalse = FALSE)) {
+      b <- raster::resample(b, r, method = "bilinear")
+    }
+    r <- r - b
+  }
+  names(r) <- layer_names
+  r
 }
 
 
