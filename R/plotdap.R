@@ -203,6 +203,25 @@ print.plotdap <- function(x, ...) {
         col = pal(breaks),
         pch = 20
       )
+    } else if (!is.null(props$group)) {
+      # tracks from add_tabledap(group = ): join consecutive points of the
+      # same track (rows are already sorted by track and time); each segment
+      # takes the color of the point it starts from
+      xy <- sf::st_coordinates(layer[["geometry"]])
+      n <- nrow(xy)
+      idx <- which(props$group[-1] == props$group[-n])
+      graphics::segments(
+        xy[idx, 1], xy[idx, 2], xy[idx + 1, 1], xy[idx + 1, 2],
+        col = pal(props$values[idx]),
+        lwd = props$size
+      )
+      graphics::legend(
+        "topright",
+        title = props$name,
+        legend = format(breaks),
+        col = pal(breaks),
+        lwd = 2
+      )
     } else {
       # should be sf POINTS
       plot(

@@ -5,6 +5,9 @@
   both the 'ggplot2' and 'base' methods. Arrows are block averages of the
   grid ('maxarrows'), are drawn in the correct geographic direction on any
   projection, and their length can be adjusted with 'scale'.
+- New argument 'group' in 'add_tabledap()' draws tracks (gliders, drifters,
+  floats, ships, tagged animals) as one line per track, ordered by time, with
+  the color varying along the track. Default 'NULL' keeps the point plot.
 
 - 'add_griddap()' with the 'ggplot2' method now draws grids with 'geom_raster()'
   instead of converting every cell to a polygon, which is several times faster

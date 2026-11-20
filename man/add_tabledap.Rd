@@ -13,6 +13,7 @@ add_tabledap(
   shape = 19,
   animate = FALSE,
   cumulative = FALSE,
+  group = NULL,
   ...
 )
 }
@@ -39,7 +40,17 @@ gganimate package.}
 
 \item{cumulative}{- if animation should be cumulative -default FALSE}
 
-\item{...}{arguments passed along to \code{geom_sf()} (if \code{method='ggplot2'}, otherwise ignored).}
+\item{group}{optional formula naming a column that identifies separate
+tracks, e.g. \code{~platform_id} for gliders, drifters, floats, ships or
+tagged animals. When given, each track is drawn as a line (ordered by
+\code{time} if that column exists) whose color varies along the track
+with \code{var}, instead of as unconnected points. \code{size} then sets
+the line width. Default \code{NULL} draws points, as before. For an
+animation of tracks use \code{cumulative = TRUE} so the tracks grow over time.}
+
+\item{...}{arguments passed along to \code{geom_sf()}, or to
+\code{geom_path()} when \code{group} is given
+(if \code{method='ggplot2'}, otherwise ignored).}
 }
 \value{
 A plotdap object
@@ -76,6 +87,11 @@ p <- add_tabledap(p, sardines, ~subsample_count)
 # robinson projection
 p <- plotdap(crs = "+proj=robin")
 p <- add_tabledap(p, sardines, ~subsample_count)
+
+# tracks: one line per platform, colored by temperature
+# gliders <- rerddap::tabledap(...)  # data with a platform ID column
+# p <- plotdap()
+# p <- add_tabledap(p, gliders, ~temperature, group = ~trajectory)
 
 
 }

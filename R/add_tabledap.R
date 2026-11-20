@@ -16,7 +16,16 @@
 #' Currently only implemented for \code{method='ggplot2'} and requires the
 #' gganimate package.
 #' @param cumulative - if animation should be cumulative -default FALSE
-#' @param ... arguments passed along to \code{geom_sf()} (if \code{method='ggplot2'}, otherwise ignored).
+#' @param group optional formula naming a column that identifies separate
+#' tracks, e.g. \code{~platform_id} for gliders, drifters, floats, ships or
+#' tagged animals. When given, each track is drawn as a line (ordered by
+#' \code{time} if that column exists) whose color varies along the track
+#' with \code{var}, instead of as unconnected points. \code{size} then sets
+#' the line width. Default \code{NULL} draws points, as before. For an
+#' animation of tracks use \code{cumulative = TRUE} so the tracks grow over time.
+#' @param ... arguments passed along to \code{geom_sf()}, or to
+#' \code{geom_path()} when \code{group} is given
+#' (if \code{method='ggplot2'}, otherwise ignored).
 #' @return A plotdap object
 #' @export
 #' @rdname add_tabledap
@@ -49,14 +58,22 @@
 #' p <- plotdap(crs = "+proj=robin")
 #' p <- add_tabledap(p, sardines, ~subsample_count)
 #'
+#' # tracks: one line per platform, colored by temperature
+#' # gliders <- rerddap::tabledap(...)  # data with a platform ID column
+#' # p <- plotdap()
+#' # p <- add_tabledap(p, gliders, ~temperature, group = ~trajectory)
+#'
 #'
 add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
                          size = 1.5, shape = 19, animate = FALSE,
-                         cumulative = FALSE, ...) {
+                         cumulative = FALSE, group = NULL, ...) {
   if (!is.table(table))
     stop("The `table` argument must be a `tabledap()` object", call. = FALSE)
   if (!lazyeval::is_formula(var))
     stop("The var argument must be a formula", call. = FALSE)
+  if (!is.null(group) && !lazyeval::is_formula(group))
+    stop("The `group` argument must be a formula, e.g. ~platform_id",
+         call. = FALSE)
 
   table <- format_table(table)
 
@@ -74,6 +91,24 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
   # transform to target projection
   if (inherits(plot$crs, "crs")) {
     table <- sf::st_transform(table, plot$crs)
+  }
+
+  # tracks: sort rows by track, then time, so each track's points are in
+  # the order they are joined up
+  group_values <- NULL
+  if (!is.null(group)) {
+    group_values <- lazyeval::f_eval(group, table)
+    if (length(group_values) != nrow(table)) {
+      stop("The `group` formula must give one value per row of the table",
+           call. = FALSE)
+    }
+    ord <- if ("time" %in% names(table)) {
+      order(group_values, table$time)
+    } else {
+      order(group_values)
+    }
+    table <- table[ord, ]
+    group_values <- group_values[ord]
   }
 
   # color scale
@@ -100,24 +135,44 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
           gganimate::transition_manual(factor(time), cumulative = cumulative) +
           ggplot2::labs(title = "{current_frame}")
       }
-      if (length(plot$ggplot$layers) == 1) {
-        return(
-          add_ggplot(
-            plot,
-            geom_sf(data = table, mapping = ggplot2::aes(colour = !!rlang::f_rhs(var)),
-                    size = size, pch = shape, ...),
-            scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
+      if (animate && !is.null(group) && !cumulative) {
+        warning(
+          "Animating tracks without `cumulative = TRUE` shows only one ",
+          "point per track in each frame, so no lines are drawn",
+          call. = FALSE
         )
+      }
+
+      if (is.null(group)) {
+        data_layer <- geom_sf(
+          data = table, mapping = ggplot2::aes(colour = !!rlang::f_rhs(var)),
+          size = size, pch = shape, ...)
       } else {
-        #plot$ggplot <- plot$ggplot + ggnewscale::new_scale_colour() + ggnewscale::new_scale_fill()
-        return(
-          add_ggplot(
-            plot,
-            ggnewscale::new_scale_colour(),
-            geom_sf(data = table, mapping = ggplot2::aes(colour = !!rlang::f_rhs(var)),
-                    size = size, pch = shape, ...),
-            scale_colour_gradientn(name = lazyeval::f_text(var), colours = cols))
-        )
+        # geom_path() lets the colour vary along each track; the
+        # coordinates are already in the plot CRS
+        track_df <- sf::st_drop_geometry(table)
+        xy <- sf::st_coordinates(table)
+        track_df$x <- xy[, 1]
+        track_df$y <- xy[, 2]
+        track_df$.track <- group_values
+        data_layer <- ggplot2::geom_path(
+          data = track_df,
+          mapping = ggplot2::aes(x = .data$x, y = .data$y, group = .data$.track,
+                                 colour = !!rlang::f_rhs(var)),
+          linewidth = size / 2, ...)
+      }
+      color_scale <- scale_colour_gradientn(name = lazyeval::f_text(var),
+                                            colours = cols)
+
+      # geom_path() maps x/y, which would title the axes "x" and "y";
+      # blank them to match the geom_sf() maps
+      extras <- if (is.null(group)) list() else list(ggplot2::labs(x = NULL, y = NULL))
+
+      if (length(plot$ggplot$layers) == 1) {
+        return(do.call(add_ggplot, c(list(plot, data_layer, color_scale), extras)))
+      } else {
+        return(do.call(add_ggplot, c(list(plot, ggnewscale::new_scale_colour(),
+                                          data_layer, color_scale), extras)))
       }
     }
 
@@ -135,7 +190,8 @@ add_tabledap <- function(plot, table, var, color = c("#132B43", "#56B1F7"),
       values = lazyeval::f_eval(var, table),
       color = cols,
       size = size,
-      shape = shape
+      shape = shape,
+      group = group_values
     )
   )
 
