@@ -169,6 +169,18 @@ print.plotdap <- function(x, ...) {
   for (i in setdiff(seq_along(x$layers), 1)) {
     layer <- x$layers[[i]]
     props <- attr(layer, "props")
+
+    # vector arrows from add_griddap_vectors(): no color scale or legend
+    if (inherits(layer, "plotdap_vectors")) {
+      graphics::arrows(
+        layer$x, layer$y, layer$xend, layer$yend,
+        length = props$head_length / 2.54,  # cm -> inches
+        col = props$color,
+        lwd = props$linewidth / 0.75        # ggplot2 linewidth -> lwd
+      )
+      next
+    }
+
     rng <- range(props$values, na.rm = TRUE)
     pal <- scales::col_numeric(props$color, rng)
     breaks <- stats::quantile(props$values, 0:4/4, na.rm = TRUE)
@@ -237,6 +249,12 @@ get_bbox <- function(x) {
   if (inherits(x, "RasterLayer")) {
     ext <- as.list(raster::extent(x))
     return(stats::setNames(ext, c("xmin", "xmax", "ymin", "ymax")))
+  }
+  if (inherits(x, "plotdap_vectors")) {
+    return(c(
+      xmin = min(x$x, x$xend), xmax = max(x$x, x$xend),
+      ymin = min(x$y, x$yend), ymax = max(x$y, x$yend)
+    ))
   }
   invisible()
 }

@@ -1,5 +1,11 @@
 # plotdap 1.2.1 (development)
 
+- New function 'add_griddap_vectors()' draws arrows for vector fields such
+  as winds or currents from the u/v components in a 'griddap()' result, for
+  both the 'ggplot2' and 'base' methods. Arrows are block averages of the
+  grid ('maxarrows'), are drawn in the correct geographic direction on any
+  projection, and their length can be adjusted with 'scale'.
+
 - 'add_griddap()' with the 'ggplot2' method now draws grids with 'geom_raster()'
   instead of converting every cell to a polygon, which is several times faster
   and allows a much larger 'maxpixels'. New argument 'render = "polygon"'
