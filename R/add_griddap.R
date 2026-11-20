@@ -261,7 +261,10 @@ add_griddap <- function(plot, grid, var, fill = "viridis",
       ),
       geom_args
     )),
-    scale_fill_gradientn(name = var_name, colors = cols, na.value = NA)
+    scale_fill_gradientn(name = var_name, colors = cols, na.value = NA),
+    # geom_raster() maps x/y, so ggplot2 would title the axes "x" and "y";
+    # blank them to match geom_sf() maps (the graticule labels show lon/lat)
+    ggplot2::labs(x = NULL, y = NULL)
   )
 }
 
